@@ -9,14 +9,20 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    help.cpp \
     main.cpp \
-    entrance.cpp
+    entrance.cpp \
+    mainwindow.cpp
 
 HEADERS += \
-    entrance.h
+    entrance.h \
+    help.h \
+    mainwindow.h
 
 FORMS += \
-    entrance.ui
+    entrance.ui \
+    help.ui \
+    mainwindow.ui
 
 TRANSLATIONS += \
     Paydirt_en_US.ts
@@ -27,3 +33,6 @@ CONFIG += embed_translations
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    Res_Paydirt.qrc
