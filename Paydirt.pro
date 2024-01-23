@@ -9,6 +9,7 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    futures.cpp \
     help.cpp \
     main.cpp \
     entrance.cpp \
@@ -16,11 +17,13 @@ SOURCES += \
 
 HEADERS += \
     entrance.h \
+    futures.h \
     help.h \
     mainwindow.h
 
 FORMS += \
     entrance.ui \
+    futures.ui \
     help.ui \
     mainwindow.ui
 
@@ -36,3 +39,4 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 RESOURCES += \
     Res_Paydirt.qrc
+

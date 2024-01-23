@@ -20,7 +20,7 @@ public:
     ~Entrance();
 
 private slots:
-    void on_pushButton_clicked();
+    void on_pushButton_1_clicked();
 
     void on_pushButton_2_clicked();
 
@@ -32,5 +32,7 @@ private slots:
 
 private:
     Ui::Entrance *ui;
+
+    bool eventFilter(QObject *watched, QEvent *event);
 };
 #endif // ENTRANCE_H

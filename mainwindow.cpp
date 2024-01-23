@@ -12,3 +12,20 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
+
+void MainWindow::on_pushButton_clicked()
+{
+    Futures *futures = new Futures;
+    if (this->isMaximized())
+    {
+        futures->showMaximized();
+    }
+    else
+    {
+        futures->move(this->pos()); // 设置位置，使其与主界面对齐
+        futures->resize(this->size()); // 设置大小与主界面相同
+        futures->show();
+    }
+    this->close();
+}
+
