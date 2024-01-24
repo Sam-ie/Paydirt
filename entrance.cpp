@@ -1,25 +1,18 @@
 #include "entrance.h"
 #include "ui_entrance.h"
 
+Entrance *Entrance::instance() {
+    static Entrance *instance = nullptr;
+    if (!instance) {
+        instance = new Entrance();
+    }
+    return instance;
+}
+
 Entrance::Entrance(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::Entrance)
 {
-    // QPushButton *button1 = new QPushButton("pushButton_1", this);
-    // button1->setFocusPolicy(Qt::NoFocus);
-
-    // QPushButton *button2 = new QPushButton("pushButton_2", this);
-    // button2->setFocusPolicy(Qt::NoFocus);
-
-    // QPushButton *button3 = new QPushButton("pushButton_3", this);
-    // button3->setFocusPolicy(Qt::NoFocus);
-
-    // QPushButton *button4 = new QPushButton("pushButton_4", this);
-    // button4->setFocusPolicy(Qt::NoFocus);
-
-    // QPushButton *button5 = new QPushButton("pushButton_5", this);
-    // button5->setFocusPolicy(Qt::NoFocus);
-
     ui->setupUi(this);
 
     ui->pushButton_1->installEventFilter(this);
@@ -36,7 +29,7 @@ Entrance::~Entrance()
 
 void Entrance::on_pushButton_1_clicked()
 {
-    MainWindow *mainWindow = new MainWindow;
+    MainWindow *mainWindow = MainWindow::instance();
     if (this->isMaximized())
     {
         mainWindow->showMaximized();
@@ -57,14 +50,14 @@ void Entrance::on_pushButton_1_clicked()
 
 void Entrance::on_pushButton_2_clicked()
 {
-    Help *help = new Help;
+    Help *help = Help::instance();
     help->show();
 }
 
 
 void Entrance::on_pushButton_3_clicked()
 {
-    Help *help = new Help;
+    Help *help = Help::instance();
     help->show();
 }
 

@@ -13,13 +13,15 @@ SOURCES += \
     help.cpp \
     main.cpp \
     entrance.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    player.cpp
 
 HEADERS += \
     entrance.h \
     futures.h \
     help.h \
-    mainwindow.h
+    mainwindow.h \
+    player.h
 
 FORMS += \
     entrance.ui \

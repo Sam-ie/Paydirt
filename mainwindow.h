@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include "futures.h"
+#include "player.h"
 
 namespace Ui {
 class MainWindow;
@@ -13,6 +14,9 @@ class MainWindow : public QWidget
     Q_OBJECT
 
 public:
+    static MainWindow *instance();
+
+private:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 

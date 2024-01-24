@@ -1,45 +1,56 @@
 #include "futures.h"
 #include "ui_futures.h"
 
+Futures *Futures::instance() {
+    static Futures *instance = nullptr;
+    if (!instance) {
+        instance = new Futures();
+    }
+    return instance;
+}
+
 Futures::Futures(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::Futures)
 {
     ui->setupUi(this);
 
-    list_goods={"飞机","海景房","游轮","红宝石","钻石",
-        "汽车","高档化妆品","高档服装","水晶","工艺品",
-        "电脑","黄金","手机","红酒","办公桌",
-        "石油","钢材","煤炭","化肥","图书",
-        "药品","茶叶","木材","食品","香烟"};
+    //商品序号、商品名、商品等级、商品价格、商品总数量、玩家持有数量、他人持有数量、商品涨跌情况、历史涨跌情况、购买价格、上次购买时价格
 
-    list_count={10,20,40,60,70,
-        20,40,60,100,160,
-        40,60,80,160,240,
-        50,60,80,100,120,
-        150,180,200,250,300};
+    fgs[0]={0,"飞机",5,10000000,10,0,0,0,0,0,0};
+    fgs[1]={1,"海景房",5,5000000,20,0,0,0,0,0,0};
+    fgs[2]={2,"游轮",5,2000000,40,0,0,0,0,0,0};
+    fgs[3]={3,"红宝石",5,1000000,60,0,0,0,0,0,0};
+    fgs[4]={4,"钻石",5,800000,70,0,0,0,0,0,0};
+    fgs[5]={5,"汽车",4,200000,60,0,0,0,0,0,0};
+    fgs[6]={6,"高档化妆品",4,100000,80,0,0,0,0,0,0};
+    fgs[7]={7,"高档服装",4,80000,120,0,0,0,0,0,0};
+    fgs[8]={8,"水晶",4,50000,200,0,0,0,0,0,0};
+    fgs[9]={9,"工艺品",4,30000,320,0,0,0,0,0,0};
+    fgs[10]={10,"电脑",3,10000,140,0,0,0,0,0,0};
+    fgs[11]={11,"黄金",3,5000,240,0,0,0,0,0,0};
+    fgs[12]={12,"手机",3,3000,320,0,0,0,0,0,0};
+    fgs[13]={13,"红酒",3,2000,400,0,0,0,0,0,0};
+    fgs[14]={14,"办公桌",3,1000,640,0,0,0,0,0,0};
+    fgs[15]={15,"石油",2,800,200,0,0,0,0,0,0};
+    fgs[16]={16,"钢材",2,600,240,0,0,0,0,0,0};
+    fgs[17]={17,"煤炭",2,500,280,0,0,0,0,0,0};
+    fgs[18]={18,"化肥",2,300,400,0,0,0,0,0,0};
+    fgs[19]={19,"图书",2,200,480,0,0,0,0,0,0};
+    fgs[20]={20,"药品",1,100,200,0,0,0,0,0,0};
+    fgs[21]={21,"茶叶",1,80,240,0,0,0,0,0,0};
+    fgs[22]={22,"木材",1,50,320,0,0,0,0,0,0};
+    fgs[23]={23,"食品",1,30,400,0,0,0,0,0,0};
+    fgs[24]={24,"香烟",1,10,1000,0,0,0,0,0,0};
 
-    list_player_count={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-    list_others_count={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+    level=1;
+    upgrade=false;
+    level_need_money={};
 
-    list_price={10000000,5000000,2000000,1000000,800000,
-        200000,100000,80000,50000,30000,
-        10000,5000,3000,2000,1000,
-        800,600,500,300,200,
-        100,80,50,30,10};
-
-    list_price_float_rate={0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-
-    list_update_cost={};
-
-    list_count_mul_rate={1,4,20,120};
-
-    for (int i=(4-level)*5;i<list_goods.length();i++)
+    for (int i=0;i<sizeof(fgs)/sizeof(Future_goods);i++)
     {
-        int cur_count=list_count[i]*list_count_mul_rate[level+std::min(int(i/5),3)-4]-list_player_count[i]-list_others_count[i];
-        QString str=FillIn(list_goods[i],5,"  ")+" "+FillIn(QString::number(list_price[i],'f',2),12," ")+" "+
-                      FillIn(QString::number(cur_count,'f',0),6," ");
-        ui->listWidget->addItem(str);
+        if(fgs[i].goods_level<=level)
+            paddingWindow(fgs[i],1);
     }
 }
 
@@ -48,7 +59,7 @@ Futures::~Futures()
     delete ui;
 }
 
-QString Futures::FillIn (QString str,int maxLen,QString c)
+QString Futures::fillFormat (QString str,int maxLen,QString c)
 {
     int len = str.length();
     if(len < maxLen)
@@ -65,6 +76,94 @@ bool Futures::isPositiveInteger(QString str) {
     // 正整数正则表达式，不包括前导零
     QRegularExpression regex("^\\d+$");
     return regex.match(str).hasMatch();
+}
+
+void Futures::paddingWindow(Future_goods fg, int place)
+{
+    int cur_serial_num=fg.serial_num;
+    int location=0;
+    if (place==1)
+    {
+        QString str=fillFormat(fg.goods,5,"  ")+" "+fillFormat(QString::number(fg.cur_price,'f',2),12," ")+" "+
+                      fillFormat(QString::number(fg.total_num*pow(4,std::max(0,level-fg.goods_level))-fg.player_num-fg.others_num,'f',0),6," ");
+        QList<QListWidgetItem *> items = ui->listWidget->findItems("*", Qt::MatchWildcard);
+        if (!items.empty())
+        {
+            foreach(QListWidgetItem *item, items)
+            {
+                QStringList list = item->text().split(" ");
+                list.erase(std::remove_if(list.begin(), list.end(), [](const QString &s) { return s.isEmpty(); }), list.end());
+
+                int cur_location=0;
+                for (int i=0;i<sizeof(fgs)/sizeof(Future_goods);i++)
+                {
+                    if(list.at(0)==fgs[i].goods)
+                    {
+                        cur_location=i;
+                        break;
+                    }
+                }
+                if (cur_location==cur_serial_num)
+                {
+                    item->setText(str);
+                    return;
+                }
+                if (cur_location>cur_serial_num)
+                {
+                    ui->listWidget->insertItem(location,str);
+                    return;
+                }
+                location++;
+            }
+        }
+        ui->listWidget->addItem(str);
+    }
+    else if (place==2)
+    {
+        QString str=fillFormat(fg.goods,5,"  ")+" "+fillFormat(QString::number(fg.cur_price,'f',2),12," ")+" "+
+                      fillFormat(QString::number(fg.player_num,'f',0),6," ");
+        QList<QListWidgetItem *> items = ui->listWidget_2->findItems("*", Qt::MatchWildcard);
+        if (!items.empty())
+        {
+            foreach(QListWidgetItem *item, items)
+            {
+                QStringList list = item->text().split(" ");
+                list.erase(std::remove_if(list.begin(), list.end(), [](const QString &s) { return s.isEmpty(); }), list.end());
+
+                int cur_location=0;
+                for (int i=0;i<sizeof(fgs)/sizeof(Future_goods);i++)
+                {
+                    if(list.at(0)==fgs[i].goods)
+                    {
+                        cur_location=i;
+                        break;
+                    }
+                }
+                if (cur_location==cur_serial_num)
+                {
+                    if (fg.player_num==0)
+                    {
+                        ui->listWidget_2->takeItem(ui->listWidget_2->row(item));
+                    }
+                    else
+                    {
+                        item->setText(str);
+                        ui->listWidget_2->setCurrentItem(item);
+                    }
+                    return;
+                }
+                if (cur_location>cur_serial_num)
+                {
+                    ui->listWidget_2->insertItem(location,str);
+                    ui->listWidget_2->setCurrentRow(location);
+                    return;
+                }
+                location++;
+            }
+        }
+        ui->listWidget_2->addItem(str);
+        ui->listWidget_2->setCurrentRow(location);
+    }
 }
 
 void Futures::on_pushButton_2_clicked()
@@ -88,63 +187,26 @@ void Futures::on_pushButton_2_clicked()
         QStringList list = selectedText.split(" ");
         list.erase(std::remove_if(list.begin(), list.end(), [](const QString &s) { return s.isEmpty(); }), list.end());
 
-        // 拆分后的第二项（索引为1）转换为浮点数
-        float floatValue = list.at(1).toFloat();
-        // 拆分后的第三项（索引为2）转换为整数
-        int intValue = list.at(2).toInt();
-        int num=list_goods.indexOf(list.at(0));
+        int fg_num;
+        for (int i=0;i<sizeof(fgs)/sizeof(Future_goods);i++)
+        {
+            if(list.at(0)==fgs[i].goods)
+            {
+                fg_num=i;
+                break;
+            }
+        }
 
         int sub_num=ui->lineEdit->text().toInt();
-        if (sub_num>intValue)
+        if (sub_num>fgs[fg_num].total_num*pow(4,std::max(0,level-fgs[fg_num].goods_level))-fgs[fg_num].player_num-fgs[fg_num].others_num)
         {
-            sub_num=intValue;
+            sub_num=fgs[fg_num].total_num*pow(4,std::max(0,level-fgs[fg_num].goods_level))-fgs[fg_num].player_num-fgs[fg_num].others_num;
             ui->lineEdit->setText(QString::number(sub_num));
         }
+        fgs[fg_num].player_num+=sub_num;
 
-        intValue-=sub_num;
-
-        QString str=FillIn(list_goods[num],5,"  ")+" "+FillIn(QString::number(floatValue,'f',2),12," ")+" "+
-                      FillIn(QString::number(intValue,'f',0),6," ");
-        selectedItems.first()->setText(str);
-
-        list_player_count[num]+=ui->lineEdit->text().toInt();
-
-        str=FillIn(list_goods[num],5,"  ")+" "+FillIn(QString::number(floatValue,'f',2),12," ")+" "+
-              FillIn(QString::number(list_player_count[num],'f',0),6," ");
-
-        QList<QListWidgetItem *> items = ui->listWidget_2->findItems("*", Qt::MatchWildcard);
-        bool flag=false;
-        if (!items.empty())
-        {
-            foreach(QListWidgetItem *item, items)
-            {
-                QStringList list = item->text().split(" ");
-                list.erase(std::remove_if(list.begin(), list.end(), [](const QString &s) { return s.isEmpty(); }), list.end());
-                int num_new=list_goods.indexOf(list.at(0));
-                if (num_new==num)
-                {
-                    flag=true;
-                    item->setText(str);
-                }
-            }
-        }
-        if (!flag)
-        {
-            int location=items.length();
-            for(int i=0;i<items.length();i++)
-            {
-                QStringList list = items[i]->text().split(" ");
-                list.erase(std::remove_if(list.begin(), list.end(), [](const QString &s) { return s.isEmpty(); }), list.end());
-                int num_new=list_goods.indexOf(list.at(0));
-                if (num_new>num)
-                {
-                    location=i;
-                    break;
-                }
-            }
-            ui->listWidget_2->insertItem(location,str);
-        }
-
+        paddingWindow(fgs[fg_num],1);
+        paddingWindow(fgs[fg_num],2);
         repaint();
     }
 }
@@ -171,47 +233,27 @@ void Futures::on_pushButton_3_clicked()
         QStringList list = selectedText.split(" ");
         list.erase(std::remove_if(list.begin(), list.end(), [](const QString &s) { return s.isEmpty(); }), list.end());
 
-        // 拆分后的第二项（索引为1）转换为浮点数
-        float floatValue = list.at(1).toFloat();
-        // 拆分后的第三项（索引为2）转换为整数
-        int intValue = list.at(2).toInt();
-        int num=list_goods.indexOf(list.at(0));
-
-        int sub_num=ui->lineEdit_2->text().toInt();
-        if (sub_num>intValue)
+        int fg_num;
+        for (int i=0;i<sizeof(fgs)/sizeof(Future_goods);i++)
         {
-            sub_num=intValue;
-            ui->lineEdit_2->setText(QString::number(sub_num));
-        }
-
-        intValue-=sub_num;
-
-        QString str=FillIn(list_goods[num],5,"  ")+" "+FillIn(QString::number(floatValue,'f',2),12," ")+" "+
-                      FillIn(QString::number(intValue,'f',0),6," ");
-        if (intValue>0)
-            selectedItems.first()->setText(str);
-        else
-            ui->listWidget_2->takeItem(ui->listWidget_2->row(selectedItems.first()));
-
-        list_player_count[num]=intValue;
-
-
-        QList<QListWidgetItem *> items = ui->listWidget->findItems("*", Qt::MatchWildcard);
-        foreach(QListWidgetItem *item, items)
-        {
-            QStringList list = item->text().split(" ");
-            list.erase(std::remove_if(list.begin(), list.end(), [](const QString &s) { return s.isEmpty(); }), list.end());
-            int num_new=list_goods.indexOf(list.at(0));
-            int intValue_new = list.at(2).toInt();
-
-            if (num_new==num)
+            if(list.at(0)==fgs[i].goods)
             {
-                str=FillIn(list_goods[num],5,"  ")+" "+FillIn(QString::number(floatValue,'f',2),12," ")+" "+
-                      FillIn(QString::number(intValue_new+sub_num,'f',0),6," ");
-                item->setText(str);
+                fg_num=i;
+                break;
             }
         }
 
+        int sub_num=ui->lineEdit_2->text().toInt();
+        if (sub_num>fgs[fg_num].player_num)
+        {
+            sub_num=fgs[fg_num].player_num;
+            ui->lineEdit_2->setText(QString::number(sub_num));
+        }
+
+        fgs[fg_num].player_num-=sub_num;
+
+        paddingWindow(fgs[fg_num],1);
+        paddingWindow(fgs[fg_num],2);
         repaint();
     }
 }
@@ -228,32 +270,29 @@ void Futures::on_pushButton_clicked()
     if (upgrade)
     {
         upgrade=false;
-        if (level<=4)
+        if (level<5)
         {
             level+=1;
-            for (int i=(4-level)*5+4;i>=(4-level)*5;i--)
+            for (int i=0;i<sizeof(fgs)/sizeof(Future_goods);i++)
             {
-                int cur_count=list_count[i]*list_count_mul_rate[level+std::min(int(i/5),3)-4]-list_player_count[i]-list_others_count[i];
-                QString str=FillIn(list_goods[i],5,"  ")+" "+FillIn(QString::number(list_price[i],'f',2),12," ")+" "+
-                              FillIn(QString::number(cur_count,'f',0),6," ");
-                ui->listWidget->insertItem(0,str);
+                if(fgs[i].goods_level<=level)
+                    paddingWindow(fgs[i],1);
             }
-            QList<QListWidgetItem *> items = ui->listWidget->findItems("*", Qt::MatchWildcard);
-            foreach(QListWidgetItem *item, items)
-            {
-                QStringList list = item->text().split(" ");
-                list.erase(std::remove_if(list.begin(), list.end(), [](const QString &s) { return s.isEmpty(); }), list.end());
-                int num_new=list_goods.indexOf(list.at(0));
-                float floatValue = list.at(1).toFloat();
-                int intValue_new = list.at(2).toInt();
-
-                int cur_count=list_count[num_new]*list_count_mul_rate[level+std::min(int(num_new/5),3)-4]-
-                    list_count[num_new]*list_count_mul_rate[level+std::min(int(num_new/5),3)-5]+intValue_new;
-                QString str=FillIn(list_goods[num_new],5,"  ")+" "+FillIn(QString::number(floatValue,'f',2),12," ")+" "+
-                      FillIn(QString::number(cur_count,'f',0),6," ");
-                item->setText(str);
-            }
+            repaint();
         }
     }
+}
+
+void Futures::on_pushButton_5_clicked()
+{
+    ui->lineEdit->setText("256000");
+    on_pushButton_2_clicked();
+}
+
+
+void Futures::on_pushButton_6_clicked()
+{
+    ui->lineEdit_2->setText("256000");
+    on_pushButton_3_clicked();
 }
 

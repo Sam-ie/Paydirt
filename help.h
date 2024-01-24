@@ -12,6 +12,9 @@ class Help : public QDialog
     Q_OBJECT
 
 public:
+    static Help *instance();
+
+private:
     explicit Help(QWidget *parent = nullptr);
     ~Help();
 

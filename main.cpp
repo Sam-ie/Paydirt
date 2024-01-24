@@ -18,7 +18,7 @@ int main(int argc, char *argv[])
             break;
         }
     }
-    Entrance w;
-    w.show();
+    Entrance *e=Entrance::instance();
+    e->show();
     return a.exec();
 }

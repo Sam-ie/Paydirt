@@ -4,6 +4,7 @@
 #include <QWidget>
 #include "mainwindow.h"
 #include "help.h"
+#include "player.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -16,6 +17,9 @@ class Entrance : public QWidget
     Q_OBJECT
 
 public:
+    static Entrance *instance();
+
+private:
     Entrance(QWidget *parent = nullptr);
     ~Entrance();
 

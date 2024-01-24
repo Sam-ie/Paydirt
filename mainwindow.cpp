@@ -1,6 +1,14 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+MainWindow *MainWindow::instance() {
+    static MainWindow *instance = nullptr;
+    if (!instance) {
+        instance = new MainWindow();
+    }
+    return instance;
+}
+
 MainWindow::MainWindow(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::MainWindow)
@@ -15,7 +23,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_pushButton_clicked()
 {
-    Futures *futures = new Futures;
+    Futures *futures = Futures::instance();
     if (this->isMaximized())
     {
         futures->showMaximized();
