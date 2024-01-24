@@ -41,6 +41,10 @@ void Entrance::on_pushButton_1_clicked()
     {
         mainWindow->showMaximized();
     }
+    else if(this->isFullScreen())
+    {
+        mainWindow->showFullScreen();
+    }
     else
     {
         mainWindow->move(this->pos()); // 设置位置，使其与主界面对齐
@@ -67,8 +71,7 @@ void Entrance::on_pushButton_3_clicked()
 
 void Entrance::on_pushButton_4_clicked()
 {
-    Help *help = new Help;
-    help->show();
+    this->showFullScreen();
 }
 
 
@@ -86,8 +89,8 @@ bool Entrance::eventFilter(QObject *watched, QEvent *event)
         if (button)
         {
             // 改变按钮样式，例如改变背景色
-            // button->setStyleSheet("QPushButton{outline: none;font-size: 55px;background-color: blue;color: rgb(255, 120, 0);}");
-            button->setStyleSheet("QPushButton{outline: none;font-size: 55px;color: rgb(255, 120, 0);}");
+            // button->setStyleSheet("QPushButton{outline: none;font-size: 52px;background-color: blue;color: rgb(255, 120, 0);}");
+            button->setStyleSheet("QPushButton{outline: none;font-size: 52px;color: rgb(255, 120, 0);}");
         }
     } else if (event->type() == QEvent::FocusOut)
     {
@@ -112,8 +115,8 @@ bool Entrance::eventFilter(QObject *watched, QEvent *event)
         button->setFocus();
         if (button)
         {
-            // button->setStyleSheet("QPushButton{outline: none;font-size: 55px;background-color: blue;color: rgb(255, 120, 0);}");
-            button->setStyleSheet("QPushButton{outline: none;font-size: 55px;color: rgb(255, 120, 0);}");
+            // button->setStyleSheet("QPushButton{outline: none;font-size: 52px;background-color: blue;color: rgb(255, 120, 0);}");
+            button->setStyleSheet("QPushButton{outline: none;font-size: 52px;color: rgb(255, 120, 0);}");
         }
     }
     return QObject::eventFilter(watched, event);

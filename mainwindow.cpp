@@ -20,6 +20,10 @@ void MainWindow::on_pushButton_clicked()
     {
         futures->showMaximized();
     }
+    else if(this->isFullScreen())
+    {
+        futures->showFullScreen();
+    }
     else
     {
         futures->move(this->pos()); // 设置位置，使其与主界面对齐
