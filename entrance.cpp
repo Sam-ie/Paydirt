@@ -9,6 +9,11 @@ Entrance *Entrance::instance() {
     return instance;
 }
 
+void Entrance::set_close()
+{
+    this->close();
+}
+
 Entrance::Entrance(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::Entrance)
@@ -29,35 +34,21 @@ Entrance::~Entrance()
 
 void Entrance::on_pushButton_1_clicked()
 {
-    MainWindow *mainWindow = MainWindow::instance();
-    if (this->isMaximized())
-    {
-        mainWindow->showMaximized();
-    }
-    else if(this->isFullScreen())
-    {
-        mainWindow->showFullScreen();
-    }
-    else
-    {
-        mainWindow->move(this->pos()); // 设置位置，使其与主界面对齐
-        mainWindow->resize(this->size()); // 设置大小与主界面相同
-        mainWindow->show();
-    }
-    this->close();
+    Select_Difficulty *sd=Select_Difficulty::instance(this);
+    sd->show();
 }
 
 
 void Entrance::on_pushButton_2_clicked()
 {
-    Help *help = Help::instance();
+    Help *help = Help::instance(this);
     help->show();
 }
 
 
 void Entrance::on_pushButton_3_clicked()
 {
-    Help *help = Help::instance();
+    Help *help = Help::instance(this);
     help->show();
 }
 

@@ -1,8 +1,9 @@
 #ifndef ENTRANCE_H
 #define ENTRANCE_H
 
+#pragma once
 #include <QWidget>
-#include "mainwindow.h"
+#include "select_difficulty.h"
 #include "help.h"
 #include "player.h"
 
@@ -18,6 +19,8 @@ class Entrance : public QWidget
 
 public:
     static Entrance *instance();
+
+    void set_close();
 
 private:
     Entrance(QWidget *parent = nullptr);

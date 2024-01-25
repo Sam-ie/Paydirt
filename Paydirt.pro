@@ -14,20 +14,23 @@ SOURCES += \
     main.cpp \
     entrance.cpp \
     mainwindow.cpp \
-    player.cpp
+    player.cpp \
+    select_difficulty.cpp
 
 HEADERS += \
     entrance.h \
     futures.h \
     help.h \
     mainwindow.h \
-    player.h
+    player.h \
+    select_difficulty.h
 
 FORMS += \
     entrance.ui \
     futures.ui \
     help.ui \
-    mainwindow.ui
+    mainwindow.ui \
+    select_difficulty.ui
 
 TRANSLATIONS += \
     Paydirt_en_US.ts

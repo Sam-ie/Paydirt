@@ -1,8 +1,10 @@
 #ifndef FUTURES_H
 #define FUTURES_H
 
+#pragma once
 #include <QWidget>
 #include "player.h"
+#include "mainwindow.h"
 
 namespace Ui {
 class Futures;
@@ -31,6 +33,8 @@ private slots:
     void on_pushButton_5_clicked();
 
     void on_pushButton_6_clicked();
+
+    void on_pushButton_7_clicked();
 
 private:
     Ui::Futures *ui;

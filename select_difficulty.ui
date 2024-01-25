@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Select_Difficulty</class>
+ <widget class="QWidget" name="Select_Difficulty">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>300</width>
+    <height>500</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>300</width>
+    <height>500</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item row="0" column="0">
+    <widget class="QWidget" name="widget" native="true">
+     <property name="styleSheet">
+      <string notr="true">QWidget#widget
+{
+	border-image: url(:/prefix1/src/RImage2.jpg);
+}
+
+QPushButton {  
+	border: none; /* 移除边框 */  
+    background-color: rgba(255, 255, 255, 200); /* 半透明背景色 */  
+	color:rgb(255, 170, 0);
+}  
+
+QPushButton:hover {  
+	border: none; /* 移除边框 */  
+	color:rgb(255, 20, 0); 
+    font-size: 50px;  /* 改变字体大小 */  
+}  
+
+QPushButton:pressed {  
+	border: none; /* 移除边框 */  
+	color:rgb(255, 20, 0);
+    font-size: 50px;  /* 改变字体大小 */  
+}  </string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <property name="leftMargin">
+       <number>35</number>
+      </property>
+      <property name="rightMargin">
+       <number>35</number>
+      </property>
+      <item>
+       <widget class="QPushButton" name="pushButton_1">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>65</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <family>华文行楷</family>
+          <pointsize>30</pointsize>
+         </font>
+        </property>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;简化的市场&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;整体经济上行&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;不引入市场竞争&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;在休闲的氛围下享受游戏&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="toolTipDuration">
+         <number>4000</number>
+        </property>
+        <property name="text">
+         <string>简单模式</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton_2">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>65</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <family>华文行楷</family>
+          <pointsize>30</pointsize>
+         </font>
+        </property>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;完整的市场&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;整体经济平稳&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;有竞争者参与投资&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;需要制定合理的投资选择&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="toolTipDuration">
+         <number>4000</number>
+        </property>
+        <property name="text">
+         <string>普通模式</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton_3">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>65</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <family>华文行楷</family>
+          <pointsize>30</pointsize>
+         </font>
+        </property>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;竞争激烈的市场&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;整体经济下行&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;竞争者的投资策略更加激进&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;需要规划前瞻性的投资战略&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="toolTipDuration">
+         <number>4000</number>
+        </property>
+        <property name="text">
+         <string>困难模式</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pushButton_4">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>65</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <family>华文行楷</family>
+          <pointsize>30</pointsize>
+         </font>
+        </property>
+        <property name="text">
+         <string>返回</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
