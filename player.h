@@ -1,6 +1,11 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
+#pragma once
+#include <QRandomGenerator>
+#include <QDateTime>
+#include "futures.h"
+
 class Player
 {
 public:
@@ -13,7 +18,8 @@ public:
     double getFuture_money() const;
     void setFuture_money(double newFuture_money);
     int getRound() const;
-    void setRound(int newround);
+    void setRound();
+    double getWhole_Market_Fluctuation() const;
 
 private:
     Player();
@@ -23,6 +29,7 @@ private:
     double cur_money;
     double future_money;
     int    round;
+    double whole_market_fluctuation;
 };
 
 #endif // PLAYER_H

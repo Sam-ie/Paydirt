@@ -10,10 +10,11 @@ Player *Player::instance() {
 
 Player::Player()
 {
-    difficulty     =0;
-    cur_money      =6000;
-    future_money   =0;
-    round          =0;
+    difficulty               =0;
+    cur_money                =1000006000;
+    future_money             =0;
+    round                    =0;
+    whole_market_fluctuation =0;
 }
 
 int Player::getDifficulty() const
@@ -23,7 +24,7 @@ int Player::getDifficulty() const
 
 void Player::setDifficulty(int newdifficulty)
 {
-    difficulty = newdifficulty;
+    this->difficulty = newdifficulty;
     cur_money-=1000*difficulty;
 }
 
@@ -34,7 +35,7 @@ double Player::getCur_money() const
 
 void Player::setCur_money(double newCur_money)
 {
-    cur_money = newCur_money;
+    cur_money += newCur_money;
 }
 
 double Player::getFuture_money() const
@@ -44,7 +45,7 @@ double Player::getFuture_money() const
 
 void Player::setFuture_money(double newfuture_money)
 {
-    cur_money = newfuture_money;
+    future_money += newfuture_money;
 }
 
 int Player::getRound() const
@@ -52,7 +53,21 @@ int Player::getRound() const
     return round;
 }
 
-void Player::setRound(int newround)
+void Player::setRound()
 {
-    round = newround;
+    round++;
+    if (round%6==1)
+    {
+        QRandomGenerator generator;
+        generator.seed(QDateTime::currentDateTime().toMSecsSinceEpoch());
+        int random_rate = generator.bounded(800000)-100000*(difficulty+2);
+        //对应-2%——6% -3%——5% -4%——4% (1.04*0.96<1)
+        whole_market_fluctuation = (double)random_rate/100000;
+    }
+    Futures::instance()->do_update();
+}
+
+double Player::getWhole_Market_Fluctuation() const
+{
+    return whole_market_fluctuation;
 }
