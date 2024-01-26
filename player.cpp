@@ -11,7 +11,7 @@ Player *Player::instance() {
 Player::Player()
 {
     difficulty               =0;
-    cur_money                =6000;
+    cur_money                =-1;
     future_money             =0;
     round                    =0;
     whole_market_fluctuation =0;
@@ -25,7 +25,8 @@ int Player::getDifficulty() const
 void Player::setDifficulty(int newdifficulty)
 {
     this->difficulty = newdifficulty;
-    cur_money-=1000*difficulty;
+    if (cur_money==-1)
+        cur_money=6000-1000*difficulty;
 }
 
 double Player::getCur_money() const

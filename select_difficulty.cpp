@@ -43,6 +43,7 @@ void Select_Difficulty::on_pushButton_1_clicked()
     }
     this->close();
     Entrance::instance()->set_close();
+    Entrance::instance()->pushbutton_1_change=true;
 }
 
 
@@ -66,6 +67,7 @@ void Select_Difficulty::on_pushButton_2_clicked()
     }
     this->close();
     Entrance::instance()->set_close();
+    Entrance::instance()->pushbutton_1_change=true;
 }
 
 
@@ -89,6 +91,7 @@ void Select_Difficulty::on_pushButton_3_clicked()
     }
     this->close();
     Entrance::instance()->set_close();
+    Entrance::instance()->pushbutton_1_change=true;
 }
 
 

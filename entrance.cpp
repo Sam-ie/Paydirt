@@ -18,6 +18,8 @@ Entrance::Entrance(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::Entrance)
 {
+    pushbutton_1_change=false;
+
     ui->setupUi(this);
 
     ui->pushButton_1->installEventFilter(this);
@@ -106,3 +108,9 @@ bool Entrance::eventFilter(QObject *watched, QEvent *event)
     return QObject::eventFilter(watched, event);
 }
 
+
+void Entrance::paintEvent(QPaintEvent *event)
+{
+    if (pushbutton_1_change)
+        ui->pushButton_1->setText("继续游戏");
+}

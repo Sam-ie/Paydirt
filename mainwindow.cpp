@@ -56,13 +56,17 @@ void MainWindow::paintEvent(QPaintEvent *event)
     ui->textEdit->setFont(font); // 设置字体
     //ui->textEdit->setAlignment(Qt::AlignVCenter); // 设置居中对齐(无效？)
     QString templatestr="                                    目标：\n              30年内挣够一个小目标(1亿元)\n                              难度：%1\n"
-                          "              玩家总资金：%2 元\n                  玩家现金：%3 元\n                      现在是第 %4 年 %5 月";
+                          "               玩家总资金：%2 元\n                   玩家现金：%3 元\n                       现在是第 %4 年 %5 月";
     QString str=templatestr.arg(difficulty_name[py->getDifficulty()])
                       .arg(QString::number(py->getCur_money()+py->getFuture_money(),'f',2))
                       .arg(QString::number(py->getCur_money(),'f',2))
                       .arg(py->getRound()/52+1).arg((int)((double)(py->getRound()%52)*3/13)+1);
     ui->textEdit->setText(str);
 
+    if (py->getWhole_Market_Fluctuation()<0)
+        ui->textEdit_2->setTextColor("green");
+    if (py->getWhole_Market_Fluctuation()>0)
+        ui->textEdit_2->setTextColor("red");
     ui->textEdit_2->setFont(font); // 设置字体
     templatestr="                       宏观经济：%1%\n";
     str=templatestr.arg(py->getWhole_Market_Fluctuation());

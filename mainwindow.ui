@@ -43,7 +43,7 @@
      <property name="styleSheet">
       <string notr="true">QWidget#widget
 {
-	border-image: url(:/prefix1/src/RImage3.jpg);
+	border-image: url(:/prefix1/res/RImage3.jpg);
 }</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">

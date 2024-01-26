@@ -86,7 +86,7 @@ void Futures::paddingWindow(Future_goods fg, int place)
     {
         QString str=fillFormat(fg.goods,5,"  ")+" "+fillFormat(QString::number(fg.cur_price,'f',2),11," ")+" "+
                       fillFormat(QString::number(fg.total_num*pow(4,std::max(0,level-fg.goods_level))-fg.player_num-fg.others_num,'f',0),6," ")
-            +"   "+fillFormat(QString::number(fg.last_fluctuation,'f',2),6," ")+" "+fillFormat(QString::number(fg.total_fluctuation,'f',2),7," ");
+            +"   "+fillFormat(QString::number(fg.last_fluctuation,'f',2),6," ")+"     "+fillFormat(QString::number(fg.total_fluctuation,'f',2),7," ");
         QList<QListWidgetItem *> items = ui->listWidget->findItems("*", Qt::MatchWildcard);
         if (!items.empty())
         {
@@ -106,6 +106,8 @@ void Futures::paddingWindow(Future_goods fg, int place)
                 }
                 if (cur_location==cur_serial_num)
                 {
+                    // if (fg.last_fluctuation<0)
+                    //     item->set
                     item->setText(str);
                     return;
                 }
@@ -189,7 +191,7 @@ void Futures::on_pushButton_2_clicked()
         QStringList list = selectedText.split(" ");
         list.erase(std::remove_if(list.begin(), list.end(), [](const QString &s) { return s.isEmpty(); }), list.end());
 
-        int fg_num;
+        int fg_num=0;
         for (uint i=0;i<sizeof(fgs)/sizeof(Future_goods);i++)
         {
             if(list.at(0)==fgs[i].goods)
@@ -245,7 +247,7 @@ void Futures::on_pushButton_3_clicked()
         QStringList list = selectedText.split(" ");
         list.erase(std::remove_if(list.begin(), list.end(), [](const QString &s) { return s.isEmpty(); }), list.end());
 
-        int fg_num;
+        int fg_num=0;
         for (uint i=0;i<sizeof(fgs)/sizeof(Future_goods);i++)
         {
             if(list.at(0)==fgs[i].goods)
@@ -350,13 +352,16 @@ void Futures::do_update()
         if(fgs[i].goods_level<=level)
         {
             //范围0%-5%
-            double random_rate = (pow((double)generator.bounded(400000)/100000+1,2)-1)/4.8;
+            double random_rate = (pow((double)generator.bounded(300000)/100000+1,2)-1)/3;
             double cur_rate = ((double)generator.bounded(2)-0.5)*2*random_rate;
             double total_fluctuation_fix=0;
             if (fgs[i].total_fluctuation>0)
                 total_fluctuation_fix=-fgs[i].total_fluctuation/(10+(double)py->getRound()/10);
             else
                 total_fluctuation_fix=-fgs[i].total_fluctuation/10;
+
+            qDebug()<<random_rate<<cur_rate<<py->getWhole_Market_Fluctuation()<<total_fluctuation_fix;
+
             cur_rate+=py->getWhole_Market_Fluctuation()+total_fluctuation_fix;
             cur_rate=std::min(std::max(cur_rate,-10.0),10.0);
             py->setFuture_money((double)fgs[i].player_num*fgs[i].cur_price*cur_rate*0.01);
@@ -379,18 +384,27 @@ void Futures::paintEvent(QPaintEvent *event)
     Player* py=Player::instance();
     // 设置字体
     QFont font;
-    font.setFamily("宋体"); // 设置字体为宋体
+    //font.setFamily("宋体"); // 设置字体为宋体
     font.setPointSize(12); // 设置字号为12
     font.setBold(true); // 设置字体为粗体
 
+    double expected_total_money=pow(1.009,py->getRound())*(6-py->getDifficulty())*1000*pow(0.5,level-1);
+    if (py->getCur_money()+py->getFuture_money()<expected_total_money)
+        ui->textEdit->setTextColor("green");
+    if (py->getCur_money()+py->getFuture_money()>expected_total_money)
+        ui->textEdit->setTextColor("red");
     // 设置文本对齐方式
     ui->textEdit->setFont(font); // 设置字体
-    //ui->textEdit->setAlignment(Qt::AlignVCenter); // 设置居中对齐(无效？)
+    ui->textEdit->setAlignment(Qt::AlignVCenter); // 设置居中对齐(无效？)
     QString templatestr="       玩家总资金%1元\n         玩家现金%2元";
     QString str=templatestr.arg(QString::number(py->getCur_money()+py->getFuture_money(),'f',2))
                       .arg(QString::number(py->getCur_money(),'f',2));
     ui->textEdit->setText(str);
 
+    if (py->getWhole_Market_Fluctuation()<0)
+        ui->textEdit_2->setTextColor("green");
+    if (py->getWhole_Market_Fluctuation()>0)
+        ui->textEdit_2->setTextColor("red");
     ui->textEdit_2->setFont(font); // 设置字体
     //ui->textEdit->setAlignment(Qt::AlignVCenter); // 设置居中对齐(无效？)
     templatestr="      宏观经济走势：%1 %";

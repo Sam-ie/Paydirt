@@ -37,7 +37,7 @@
      <property name="styleSheet">
       <string notr="true">QWidget#widget
 {
-	border-image: url(:/prefix1/src/RImage2.jpg);
+	border-image: url(:/prefix1/res/RImage2.jpg);
 }
 
 QPushButton {  

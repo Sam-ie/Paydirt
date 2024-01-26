@@ -1,8 +1,9 @@
 <RCC>
     <qresource prefix="/prefix1">
-        <file>src/RIcon1.png</file>
-        <file>src/RImage1.jpg</file>
-        <file>src/RImage2.jpg</file>
-        <file>src/RImage3.jpg</file>
+        <file>res/RIcon1.ico</file>
+        <file>res/RImage1.jpg</file>
+        <file>res/RImage2.jpg</file>
+        <file>res/RImage3.jpg</file>
+        <file>res/RMusic1.wav</file>
     </qresource>
 </RCC>

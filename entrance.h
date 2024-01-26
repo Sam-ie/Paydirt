@@ -20,11 +20,16 @@ class Entrance : public QWidget
 public:
     static Entrance *instance();
 
+    bool pushbutton_1_change;
+
     void set_close();
 
 private:
     Entrance(QWidget *parent = nullptr);
     ~Entrance();
+
+protected:
+    void paintEvent(QPaintEvent *event) override;
 
 private slots:
     void on_pushButton_1_clicked();
