@@ -419,7 +419,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
                </font>
               </property>
               <property name="text">
-               <string>下一月</string>
+               <string>下一周</string>
               </property>
              </widget>
             </item>

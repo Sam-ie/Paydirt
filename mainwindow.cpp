@@ -45,20 +45,68 @@ void MainWindow::on_pushButton_clicked()
 
 void MainWindow::paintEvent(QPaintEvent *event)
 {
+    Player* py=Player::instance();
     // 设置字体
     QFont font;
-    font.setFamily("宋体"); // 设置字体为宋体
-    font.setPointSize(20); // 设置字号为20
+    //font.setFamily("华文楷体"); // 设置字体(太慢)
+    font.setPointSize(20); // 设置字号为24
     font.setBold(true); // 设置字体为粗体
 
     // 设置文本对齐方式
     ui->textEdit->setFont(font); // 设置字体
     //ui->textEdit->setAlignment(Qt::AlignVCenter); // 设置居中对齐(无效？)
-    QString templatestr="                  目标：\n       40年内挣够一个小目标(1亿元)\n               难度：%1\n"
-                          "      玩家总资金：%2 元\n         玩家现金：%3 元\n           现在是第 %4 年 %5 月";
-    QString str=templatestr.arg(difficulty_name[Player::instance()->getDifficulty()])
-                      .arg(QString::number(Player::instance()->getCur_money()+Player::instance()->getFuture_money(),'f',2))
-                      .arg(QString::number(Player::instance()->getCur_money(),'f',2))
-                      .arg(Player::instance()->getRound()/12+1).arg(Player::instance()->getRound()%12+1);
+    QString templatestr="                                    目标：\n              30年内挣够一个小目标(1亿元)\n                              难度：%1\n"
+                          "              玩家总资金：%2 元\n                  玩家现金：%3 元\n                      现在是第 %4 年 %5 月";
+    QString str=templatestr.arg(difficulty_name[py->getDifficulty()])
+                      .arg(QString::number(py->getCur_money()+py->getFuture_money(),'f',2))
+                      .arg(QString::number(py->getCur_money(),'f',2))
+                      .arg(py->getRound()/52+1).arg((int)((double)(py->getRound()%52)*3/13)+1);
     ui->textEdit->setText(str);
+
+    ui->textEdit_2->setFont(font); // 设置字体
+    templatestr="                       宏观经济：%1%\n";
+    str=templatestr.arg(py->getWhole_Market_Fluctuation());
+    ui->textEdit_2->setText(str);
 }
+
+void MainWindow::on_pushButton_2_clicked()
+{
+    Help *help = Help::instance(this);
+    help->show();
+}
+
+
+void MainWindow::on_pushButton_3_clicked()
+{
+    Help *help = Help::instance(this);
+    help->show();
+}
+
+
+void MainWindow::on_pushButton_4_clicked()
+{
+    Player::instance()->setRound();
+    update();
+}
+
+
+void MainWindow::on_pushButton_5_clicked()
+{
+    Entrance *entrance = Entrance::instance();
+    if (this->isMaximized())
+    {
+        entrance->showMaximized();
+    }
+    else if(this->isFullScreen())
+    {
+        entrance->showFullScreen();
+    }
+    else
+    {
+        entrance->move(this->pos()); // 设置位置，使其与主界面对齐
+        entrance->resize(this->size()); // 设置大小与主界面相同
+        entrance->show();
+    }
+    this->close();
+}
+

@@ -20,7 +20,7 @@ Futures::Futures(QWidget *parent)
     fgs[0]={0,"飞机",5,12000000,12000000,20,0,10,0,0,0,99999999};
     fgs[1]={1,"海景房",5,5000000,5000000,40,0,20,0,0,0,99999999};
     fgs[2]={2,"游轮",5,2000000,2000000,80,0,40,0,0,0,99999999};
-    fgs[3]={3,"红宝石",5,1000000,1000000,120,60,0,0,0,0,99999999};
+    fgs[3]={3,"红宝石",5,1000000,1000000,120,0,60,0,0,0,99999999};
     fgs[4]={4,"钻石",5,800000,800000,140,0,70,0,0,0,99999999};
     fgs[5]={5,"汽车",4,200000,200000,120,0,60,0,0,0,99999999};
     fgs[6]={6,"高档化妆品",4,100000,100000,160,0,80,0,0,0,99999999};
@@ -179,6 +179,7 @@ void Futures::on_pushButton_2_clicked()
         return;
     }
 
+    Player* py=Player::instance();
     // 获取被选中的 QListWidgetItem
     QList<QListWidgetItem *> selectedItems = ui->listWidget->selectedItems();
     if (!selectedItems.isEmpty()) {
@@ -204,16 +205,16 @@ void Futures::on_pushButton_2_clicked()
             sub_num=fgs[fg_num].total_num*pow(4,std::max(0,level-fgs[fg_num].goods_level))-fgs[fg_num].player_num-fgs[fg_num].others_num;
             ui->lineEdit->setText(QString::number(sub_num));
         }
-        if (fgs[fg_num].cur_price*sub_num>Player::instance()->getCur_money())
+        if (fgs[fg_num].cur_price*sub_num>py->getCur_money())
         {
-            sub_num=(int)(Player::instance()->getCur_money()/fgs[fg_num].cur_price);
+            sub_num=(int)(py->getCur_money()/fgs[fg_num].cur_price);
             ui->lineEdit->setText(QString::number(sub_num));
         }
         fgs[fg_num].lowest_buy_price=std::min(fgs[fg_num].cur_price,fgs[fg_num].lowest_buy_price);
         fgs[fg_num].buy_price=(fgs[fg_num].buy_price*fgs[fg_num].player_num+fgs[fg_num].cur_price*sub_num)/(fgs[fg_num].player_num+sub_num);
         fgs[fg_num].player_num+=sub_num;
-        Player::instance()->setCur_money(-fgs[fg_num].cur_price*sub_num);
-        Player::instance()->setFuture_money(fgs[fg_num].cur_price*sub_num);
+        py->setCur_money(-fgs[fg_num].cur_price*sub_num);
+        py->setFuture_money(fgs[fg_num].cur_price*sub_num);
 
         paddingWindow(fgs[fg_num],1);
         paddingWindow(fgs[fg_num],2);
@@ -234,6 +235,7 @@ void Futures::on_pushButton_3_clicked()
         return;
     }
 
+    Player* py=Player::instance();
     // 获取被选中的 QListWidgetItem
     QList<QListWidgetItem *> selectedItems = ui->listWidget_2->selectedItems();
     if (!selectedItems.isEmpty()) {
@@ -261,8 +263,8 @@ void Futures::on_pushButton_3_clicked()
         }
 
         fgs[fg_num].player_num-=sub_num;
-        Player::instance()->setCur_money(fgs[fg_num].cur_price*sub_num);
-        Player::instance()->setFuture_money(-fgs[fg_num].cur_price*sub_num);
+        py->setCur_money(fgs[fg_num].cur_price*sub_num);
+        py->setFuture_money(-fgs[fg_num].cur_price*sub_num);
 
         paddingWindow(fgs[fg_num],1);
         paddingWindow(fgs[fg_num],2);
@@ -273,13 +275,13 @@ void Futures::on_pushButton_3_clicked()
 
 void Futures::on_pushButton_4_clicked()
 {
+    Player* py=Player::instance();
     double cost_money=2500*pow(8,level);
-    if (cost_money<Player::instance()->getCur_money())
+    if (cost_money<py->getCur_money())
     {
         upgrade=true;
-        Player::instance()->setCur_money(-cost_money);
+        py->setCur_money(-cost_money);
     }
-    ui->pushButton_4->setEnabled(false);
 }
 
 
@@ -294,12 +296,6 @@ void Futures::on_pushButton_clicked()
         }
     }
     Player::instance()->setRound();
-    for (uint i=0;i<sizeof(fgs)/sizeof(Future_goods);i++)
-    {
-        if(fgs[i].goods_level<=level)
-            paddingWindow(fgs[i],1);
-    }
-    repaint();
 }
 
 void Futures::on_pushButton_5_clicked()
@@ -346,32 +342,41 @@ void Futures::on_pushButton_7_clicked()
 
 void Futures::do_update()
 {
+    Player* py=Player::instance();
     QRandomGenerator generator;
     generator.seed(QDateTime::currentDateTime().toMSecsSinceEpoch());
     for (uint i=0;i<sizeof(fgs)/sizeof(Future_goods);i++)
     {
-        if(fgs[i].goods_level<=Futures::instance()->level)
+        if(fgs[i].goods_level<=level)
         {
             //范围0%-5%
             double random_rate = (pow((double)generator.bounded(400000)/100000+1,2)-1)/4.8;
             double cur_rate = ((double)generator.bounded(2)-0.5)*2*random_rate;
             double total_fluctuation_fix=0;
             if (fgs[i].total_fluctuation>0)
-                total_fluctuation_fix=-fgs[i].total_fluctuation/(10+(double)Player::instance()->getRound()/10);
+                total_fluctuation_fix=-fgs[i].total_fluctuation/(10+(double)py->getRound()/10);
             else
                 total_fluctuation_fix=-fgs[i].total_fluctuation/10;
-            cur_rate+=Player::instance()->getWhole_Market_Fluctuation()+total_fluctuation_fix;
+            cur_rate+=py->getWhole_Market_Fluctuation()+total_fluctuation_fix;
             cur_rate=std::min(std::max(cur_rate,-10.0),10.0);
-            Player::instance()->setFuture_money(fgs[i].cur_price*cur_rate*0.01*fgs[i].player_num);
+            py->setFuture_money((double)fgs[i].player_num*fgs[i].cur_price*cur_rate*0.01);
             fgs[i].last_fluctuation=cur_rate;
             fgs[i].cur_price*=(cur_rate+100)/100;
             fgs[i].total_fluctuation=fgs[i].cur_price/fgs[i].origin_price*100-100;
+            double others_num_rate=((py->getDifficulty()-1))*fgs[i].last_fluctuation*0.025+0.5;
+            fgs[i].others_num=std::min(others_num_rate*fgs[i].total_num,1.0*fgs[i].total_num*pow(4,std::max(0,level-fgs[i].goods_level))-fgs[i].player_num);
+
+            if (py->getRound()%26==1)
+                fgs[i].lowest_buy_price=std::min(fgs[i].buy_price,fgs[i].cur_price);
+            paddingWindow(fgs[i],1);
         }
     }
+    update();
 }
 
 void Futures::paintEvent(QPaintEvent *event)
 {
+    Player* py=Player::instance();
     // 设置字体
     QFont font;
     font.setFamily("宋体"); // 设置字体为宋体
@@ -381,18 +386,18 @@ void Futures::paintEvent(QPaintEvent *event)
     // 设置文本对齐方式
     ui->textEdit->setFont(font); // 设置字体
     //ui->textEdit->setAlignment(Qt::AlignVCenter); // 设置居中对齐(无效？)
-    QString templatestr="      玩家总资金：%1 元\n        玩家现金：%2 元";
-    QString str=templatestr.arg(QString::number(Player::instance()->getCur_money()+Player::instance()->getFuture_money(),'f',2))
-                      .arg(QString::number(Player::instance()->getCur_money(),'f',2));
+    QString templatestr="       玩家总资金%1元\n         玩家现金%2元";
+    QString str=templatestr.arg(QString::number(py->getCur_money()+py->getFuture_money(),'f',2))
+                      .arg(QString::number(py->getCur_money(),'f',2));
     ui->textEdit->setText(str);
 
     ui->textEdit_2->setFont(font); // 设置字体
     //ui->textEdit->setAlignment(Qt::AlignVCenter); // 设置居中对齐(无效？)
     templatestr="      宏观经济走势：%1 %";
-    str=templatestr.arg(QString::number(Player::instance()->getWhole_Market_Fluctuation(),'f',2));
+    str=templatestr.arg(QString::number(py->getWhole_Market_Fluctuation(),'f',2));
     ui->textEdit_2->setText(str);
 
-    if (Player::instance()->getCur_money()>=2500*pow(8,level)&&level<5)
+    if (py->getCur_money()>=2500*pow(8,level)&&level<5&&!upgrade)
         ui->pushButton_4->setEnabled(true);
     else
         ui->pushButton_4->setEnabled(false);

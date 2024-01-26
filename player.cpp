@@ -11,7 +11,7 @@ Player *Player::instance() {
 Player::Player()
 {
     difficulty               =0;
-    cur_money                =1000006000;
+    cur_money                =6000;
     future_money             =0;
     round                    =0;
     whole_market_fluctuation =0;
@@ -56,7 +56,7 @@ int Player::getRound() const
 void Player::setRound()
 {
     round++;
-    if (round%6==1)
+    if (round%8==1)
     {
         QRandomGenerator generator;
         generator.seed(QDateTime::currentDateTime().toMSecsSinceEpoch());
