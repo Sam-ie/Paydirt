@@ -11,7 +11,7 @@
   },
   {
     "__type__": "cc.Scene",
-    "_name": "scene",
+    "_name": "Startup",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": null,
@@ -90,7 +90,7 @@
     "_prefab": null,
     "_lpos": {
       "__type__": "cc.Vec3",
-      "x": 180,
+      "x": 179.99999999999997,
       "y": 390.00000000000006,
       "z": 0
     },
@@ -826,7 +826,7 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 360,
+      "width": 359.99999999999994,
       "height": 780
     },
     "_anchorPoint": {

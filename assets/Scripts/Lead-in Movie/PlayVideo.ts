@@ -45,8 +45,6 @@ export class PlayVideo extends Component {
         director.loadScene("Select", (err) => {
             if (err) {
                 console.error("跳转场景失败:", err);
-            } else {
-                console.log("成功跳转到 Select 场景");
             }
         });
     }
