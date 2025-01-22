@@ -37,7 +37,7 @@
     "_lpos": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": -154,
+      "y": -150,
       "z": 0
     },
     "_lrot": {
@@ -549,7 +549,7 @@
         "__id__": 20
       }
     ],
-    "_active": false,
+    "_active": true,
     "_components": [
       {
         "__id__": 26
@@ -860,7 +860,7 @@
       "__id__": 23
     },
     "_direction": 1,
-    "_enableAutoHide": true,
+    "_enableAutoHide": false,
     "_autoHideTime": 1,
     "_id": ""
   },
@@ -1332,6 +1332,6 @@
       "__id__": 0
     },
     "fileId": "a1crTsRKpDyqXyVSb7drKO",
-    "targetOverrides": null
+    "targetOverrides": []
   }
 ]

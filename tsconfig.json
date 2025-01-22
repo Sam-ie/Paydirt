@@ -4,6 +4,8 @@
 
   /* Add your custom configuration here. */
   "compilerOptions": {
-    "strict": false
+    "strict": false,
+    "target": "es2017", // 设置编译目标为 ES2017
+    "lib": ["es2017", "dom"] // 包含 ES2017 和 DOM 库
   }
 }

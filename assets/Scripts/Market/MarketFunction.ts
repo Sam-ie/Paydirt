@@ -1,5 +1,6 @@
-import { _decorator, Component, Node, Button, Color, Sprite, UITransform, director } from 'cc';
+import { _decorator, Component, Node, Button, Color, Sprite, UITransform, EventTouch, director } from 'cc';
 import EventConstants from '../Startup/EventConstants'; // 导入全局事件名称
+import { MarketController } from './MarketController';
 const { ccclass, property } = _decorator;
 
 @ccclass('MarketFunction')
@@ -135,16 +136,17 @@ export class MarketFunction extends Component {
     }
 
     /**
-     * Upgrade 按钮触摸结束事件
-     */
+ * Upgrade 按钮触摸结束事件
+ */
     onUpgradeTouchEnd(event: EventTouch) {
-        // 获取 ScrollView 节点下的 GenarateItems 脚本
-        const genarateItems = this.goodsScrollView.getComponent('GenarateItems');
-        if (genarateItems && genarateItems.addLevel) {
-            // 调用 addLevel 方法
-            genarateItems.addLevel();
+        // 获取 MarketController 的单例实例
+        const marketController = MarketController.getInstance();
+
+        if (marketController && marketController.addLevel) {
+            // 调用 MarketController 的 addLevel 方法
+            marketController.addLevel();
         } else {
-            console.error("GenarateItems 脚本或 addLevel 方法未找到");
+            console.error("MarketController 实例或 addLevel 方法未找到");
         }
     }
 

@@ -27,10 +27,53 @@ export class TradeGoods extends Component {
 
     private selectedItem: Node | null = null; // 当前选中的 item
     private scrollSpeed: number = 0.03; // 滚轮滚动速度
+    private isDragging: boolean = false; // 是否正在拖动
+    private lastMousePosition: { x: number, y: number } = { x: 0, y: 0 }; // 上一次鼠标位置
+    private isBarDragging: boolean = false; // 是否正在拖动 bar
+    private currentScrollView: ScrollView | null = null; // 当前操作的 ScrollView
+    private currentScrollbar: Node | null = null; // 当前拖动的 scrollbar
+    private currentBar: Node | null = null; // 当前拖动的 bar
 
     onLoad() {
         // 监听鼠标滚轮事件
         this.node.on(Node.EventType.MOUSE_WHEEL, this.onMouseWheel, this);
+
+        // 监听鼠标按下事件
+        this.node.on(Node.EventType.MOUSE_DOWN, this.onMouseDown, this);
+
+        // 监听鼠标移动事件
+        this.node.on(Node.EventType.MOUSE_MOVE, this.onMouseMove, this);
+
+        // 监听鼠标松开事件
+        this.node.on(Node.EventType.MOUSE_UP, this.onMouseUp, this);
+
+        // 绑定 Goods ScrollView 的 view 和 bar 事件
+        if (this.goodsScrollView) {
+            const view = this.goodsScrollView.node.getChildByName('view');
+            const scrollbar = this.goodsScrollView.node.getChildByName('scrollBar');
+            const bar = scrollbar?.getChildByName('bar');
+
+            if (view) {
+                view.on(Node.EventType.TOUCH_START, this.onViewTouchStart, this);
+            }
+            if (bar) {
+                bar.on(Node.EventType.TOUCH_START, this.onBarTouchStart, this);
+            }
+        }
+
+        // 绑定 Warehouse ScrollView 的 view 和 bar 事件
+        if (this.warehouseScrollView) {
+            const view = this.warehouseScrollView.node.getChildByName('view');
+            const scrollbar = this.warehouseScrollView.node.getChildByName('scrollBar');
+            const bar = scrollbar?.getChildByName('bar');
+
+            if (view) {
+                view.on(Node.EventType.TOUCH_START, this.onViewTouchStart, this);
+            }
+            if (bar) {
+                bar.on(Node.EventType.TOUCH_START, this.onBarTouchStart, this);
+            }
+        }
     }
 
     start() {
@@ -178,43 +221,16 @@ export class TradeGoods extends Component {
         const mousePosition = event.getLocation();
 
         // 检查鼠标是否在 Goods ScrollView 的 view 区域内
-        if (this.isMouseInView(this.goodsScrollView, mousePosition)) {
+        if (this.goodsScrollView && this.goodsScrollView.node.getChildByName('view')?.getComponent(UITransform)?.isHit(mousePosition)) {
             const deltaY = event.getScrollY(); // 获取滚轮垂直滚动量
             this.scrollContent(this.goodsScrollView, deltaY);
         }
 
         // 检查鼠标是否在 Warehouse ScrollView 的 view 区域内
-        if (this.isMouseInView(this.warehouseScrollView, mousePosition)) {
+        if (this.warehouseScrollView && this.warehouseScrollView.node.getChildByName('view')?.getComponent(UITransform)?.isHit(mousePosition)) {
             const deltaY = event.getScrollY(); // 获取滚轮垂直滚动量
             this.scrollContent(this.warehouseScrollView, deltaY);
         }
-    }
-
-    /**
-     * 检查鼠标是否在 ScrollView 的 view 区域内
-     * @param scrollView 目标 ScrollView
-     * @param mousePosition 鼠标位置
-     * @returns 是否在 view 区域内
-     */
-    isMouseInView(scrollView: ScrollView, mousePosition: { x: number, y: number }): boolean {
-        if (!scrollView || !scrollView.node) return false;
-
-        const viewNode = scrollView.node;
-        const viewTransform = viewNode.getComponent(UITransform);
-        if (!viewTransform) return false;
-
-        // 获取 view 区域的边界
-        const viewWorldPos = viewNode.worldPosition;
-        const viewWidth = viewTransform.width;
-        const viewHeight = viewTransform.height;
-
-        // 检查鼠标位置是否在 view 区域内
-        return (
-            mousePosition.x >= viewWorldPos.x - viewWidth / 2 &&
-            mousePosition.x <= viewWorldPos.x + viewWidth / 2 &&
-            mousePosition.y >= viewWorldPos.y - viewHeight / 2 &&
-            mousePosition.y <= viewWorldPos.y + viewHeight / 2
-        );
     }
 
     /**
@@ -227,6 +243,7 @@ export class TradeGoods extends Component {
         if (content) {
             const contentTransform = content.getComponent(UITransform);
             const viewTransform = scrollView.node.getComponent(UITransform);
+
             if (contentTransform && viewTransform) {
                 // 如果 content 的高度小于 view 的高度，则不需要滚动
                 if (contentTransform.height <= viewTransform.height) {
@@ -235,11 +252,168 @@ export class TradeGoods extends Component {
 
                 const currentY = content.position.y;
                 const newY = currentY - deltaY * this.scrollSpeed; // 根据滚轮滚动量调整 content 的位置
-
                 // 限制 content 的移动范围
-                const maxY = Math.max(viewTransform.height, contentTransform.height - 100);
-                const clampedY = Math.max(100, Math.min(maxY, newY)); // 限制 Y 轴范围
+                const minY = 100; // 最小 Y 值
+                const maxY = Math.max(viewTransform.height, contentTransform.height - 100); // 最大 Y 值
+                const clampedY = Math.max(minY, Math.min(maxY, newY)); // 限制 Y 轴范围
                 content.setPosition(content.position.x, clampedY, content.position.z);
+
+                // 更新 bar 的位置
+                this.updateBarPosition(scrollView, clampedY, minY, maxY);
+            }
+        }
+    }
+
+    /**
+     * 更新 bar 的位置
+     * @param scrollView 目标 ScrollView
+     * @param contentY content 的 Y 坐标
+     * @param minY content 的最小 Y 值
+     * @param maxY content 的最大 Y 值
+     */
+    updateBarPosition(scrollView: ScrollView, contentY: number, minY: number, maxY: number) {
+        const scrollbar = scrollView.node.getChildByName('scrollBar');
+        const bar = scrollbar?.getChildByName('bar');
+
+        if (scrollbar && bar) {
+            const scrollbarTransform = scrollbar.getComponent(UITransform);
+            const barTransform = bar.getComponent(UITransform);
+
+            if (scrollbarTransform && barTransform) {
+                const scrollRatio = (contentY - minY) / (maxY - minY); // 计算滚动比例
+                const scrollbarHeight = scrollbarTransform.height;
+                const barHeight = barTransform.height;
+
+                // 计算 bar 的新位置
+                const minBarY = - scrollbarHeight / 2; // bar 的最小 Y 值
+                const maxBarY = scrollbarHeight / 2 - barHeight; // bar 的最大 Y 值
+                const newY = minBarY + (maxBarY - minBarY) * (1 - scrollRatio); // 映射到 [minBarY, maxBarY] 区间
+
+                // 更新 bar 的位置
+                bar.setPosition(bar.position.x, newY, bar.position.z);
+            }
+        }
+    }
+
+    /**
+     * view 触摸开始事件
+     * @param event 触摸事件
+     */
+    onViewTouchStart(event: EventTouch) {
+        const mousePosition = event.getLocation(); // 获取触摸点的位置
+        const viewNode = this.goodsScrollView.node.getChildByName('view'); // 获取 view 节点
+
+        // 检查触摸点是否在 view 节点的范围内
+        if (viewNode?.getComponent(UITransform)?.isHit(mousePosition)) {
+            const scrollView = viewNode.parent?.getComponent(ScrollView);
+
+            if (scrollView) {
+                this.currentScrollView = scrollView;
+                this.isDragging = true; // 开始拖动
+                this.lastMousePosition = mousePosition; // 记录初始位置
+            }
+        }
+    }
+
+    /**
+     * bar 触摸开始事件
+     * @param event 触摸事件
+     */
+    onBarTouchStart(event: EventTouch) {
+        const mousePosition = event.getLocation(); // 获取触摸点的位置
+        const scrollBarNode = this.goodsScrollView.node.getChildByName('scrollBar'); // 获取 scrollBar 节点
+        const barNode = scrollBarNode?.getChildByName('bar'); // 获取 bar 节点
+
+        // 检查触摸点是否在 bar 节点的范围内
+        if (barNode?.getComponent(UITransform)?.isHit(mousePosition)) {
+            const scrollView = scrollBarNode.parent?.getComponent(ScrollView);
+
+            if (scrollView) {
+                this.currentScrollView = scrollView;
+                this.currentScrollbar = scrollBarNode;
+                this.currentBar = barNode;
+                this.isBarDragging = true; // 开始拖动 bar
+            }
+        }
+    }
+
+    /**
+     * 鼠标移动事件
+     * @param event 鼠标事件
+     */
+    onMouseMove(event: EventMouse) {
+        if (this.isDragging && this.currentScrollView) {
+            const mousePosition = event.getLocation();
+            const deltaY = mousePosition.y - this.lastMousePosition.y; // 计算垂直偏移量
+
+            // 滚动当前 ScrollView
+            this.scrollContent(this.currentScrollView, -deltaY);
+
+            this.lastMousePosition = mousePosition; // 更新上一次鼠标位置
+        }
+
+        if (this.isBarDragging && this.currentScrollView && this.currentScrollbar && this.currentBar) {
+            const mousePosition = event.getLocation();
+            const scrollbarTransform = this.currentScrollbar.getComponent(UITransform);
+            const barTransform = this.currentBar.getComponent(UITransform);
+
+            if (scrollbarTransform && barTransform) {
+                // 获取 scrollbar 的世界坐标
+                const scrollbarWorldPos = this.currentScrollbar.worldPosition;
+
+                // 计算 bar 的中心位置
+                const barHeight = barTransform.height;
+                const scrollbarHeight = scrollbarTransform.height;
+
+                // 限制 bar 的移动范围
+                const minBarY = -scrollbarHeight / 2; // bar 的最小 Y 值
+                const maxBarY = scrollbarHeight / 2 - barHeight; // bar 的最大 Y 值
+
+                // 计算 bar 的新 Y 值（以中心为基准）
+                const newY = Math.max(minBarY, Math.min(maxBarY, mousePosition.y - scrollbarWorldPos.y - barHeight / 2));
+
+                // 只有当 bar 的位置发生变化时才更新
+                if (this.currentBar.position.y !== newY) {
+                    // 更新 bar 的位置
+                    this.currentBar.setPosition(this.currentBar.position.x, newY, this.currentBar.position.z);
+
+                    // 根据 bar 的位置计算内容滚动比例
+                    const scrollRatio = (newY - minBarY) / (maxBarY - minBarY);
+                    this.scrollContentByBar(this.currentScrollView, 1 - scrollRatio); // 1 - scrollRatio 因为 Y 值越小，bar 越靠下
+                }
+            }
+        }
+    }
+
+    /**
+     * 鼠标松开事件
+     */
+    onMouseUp() {
+        this.isDragging = false; // 停止拖动
+        this.isBarDragging = false; // 停止拖动 bar
+        this.currentScrollView = null;
+        this.currentScrollbar = null;
+        this.currentBar = null;
+    }
+
+    /**
+     * 根据 bar 的位置滚动内容
+     * @param scrollView 目标 ScrollView
+     * @param scrollRatio 滚动比例 (0-1)
+     */
+    scrollContentByBar(scrollView: ScrollView, scrollRatio: number) {
+        const content = scrollView.content;
+        if (content) {
+            const contentTransform = content.getComponent(UITransform);
+            const viewTransform = scrollView.node.getComponent(UITransform);
+
+            if (contentTransform && viewTransform) {
+                const minY = 100; // content 的最小 Y 值
+                const maxY = Math.max(viewTransform.height, contentTransform.height - 100); // content 的最大 Y 值
+                const newY = minY + (maxY - minY) * scrollRatio;
+
+                // 更新 content 的位置
+                content.setPosition(content.position.x, newY, content.position.z);
             }
         }
     }

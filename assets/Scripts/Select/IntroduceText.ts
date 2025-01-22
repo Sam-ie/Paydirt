@@ -1,68 +1,80 @@
+// IntroduceText.ts
 import { _decorator, Component, Label, HorizontalTextAlignment, VerticalTextAlignment, Color } from 'cc';
+import { Paydirt } from './Paydirt'; // 导入 Paydirt
 const { ccclass, property } = _decorator;
 
 @ccclass('IntroduceText')
 export class IntroduceText extends Component {
 
-    @property(Label) // 绑定 Label 组件
-    label: Label = null;
+    // 单例实例
+    private static instance: IntroduceText;
 
-    start() {
+    @property(Label) // 绑定 Label 组件
+    private label: Label = null;
+
+    private paydirt: Paydirt;
+
+    onLoad() {
+        // 设置单例实例
+        IntroduceText.instance = this;
+
+        // 获取 Paydirt 实例
+        this.paydirt = Paydirt.getInstance();
+
+        // 初始化文本
         this.updateText();
+    }
+
+    // 获取单例实例
+    public static getInstance(): IntroduceText {
+        return IntroduceText.instance;
     }
 
     /**
      * 更新文本内容
      */
-    updateText() {
-        // 从本地存储中读取全局变量 year、month 和 total_property
-        let year = this.getGlobalVariable('year', 1); // 如果本地没有，默认值为 1
-        let month = this.getGlobalVariable('month', 1); // 如果本地没有，默认值为 1
-        let total_property = this.getGlobalVariable('total_property', 0); // 如果本地没有，默认值为 0
+    public updateText() {
+        if (!this.label) {
+            return;
+        }
 
-        // 格式化总资产，保留两位小数，并在小数点前每三位添加逗号
-        const formattedTotalProperty = this.formatNumber(total_property);
+        // 获取年、月和总资产
+        const year = this.paydirt.Year;
+        const month = this.paydirt.Month;
+        const totalProperty = this.paydirt.TotalProperty;
+
+        // 获取 Market 钱数、Auction 钱数、Lottery 钱数、Investment 钱数和活期余额
+        const marketMoney = this.paydirt.MarketMoney;
+        const auctionMoney = this.paydirt.AuctionMoney;
+        const lotteryMoney = this.paydirt.LotteryMoney;
+        const investmentMoney = this.paydirt.InvestmentMoney;
+        const currentBalance = this.paydirt.CurrentBalance;
+
+        // 格式化数值
+        const formattedTotalProperty = this.formatNumber(totalProperty);
+        const formattedMarketMoney = this.formatNumber(marketMoney);
+        const formattedAuctionMoney = this.formatNumber(auctionMoney);
+        const formattedLotteryMoney = this.formatNumber(lotteryMoney);
+        const formattedInvestmentMoney = this.formatNumber(investmentMoney);
+        const formattedCurrentBalance = this.formatNumber(currentBalance);
 
         // 设置文本内容
-        this.label.string = `第 ${year} 年第 ${month} 月\n您的总资产估值为 ${formattedTotalProperty} 元\n其中商品估值 ${formattedTotalProperty} 元\n拍卖品估值 ${formattedTotalProperty} 元\n彩票估值 ${formattedTotalProperty} 元\n资产估值 ${formattedTotalProperty} 元\n\n您想做什么：`;
+        this.label.string =
+            `第 ${year} 年第 ${month} 月\n` +
+            `您的总资产估值为 ${formattedTotalProperty} 元\n` +
+            `商品估值：${formattedMarketMoney} 元\n` +
+            `拍卖品估值：${formattedAuctionMoney} 元\n` +
+            `彩票估值：${formattedLotteryMoney} 元\n` +
+            `资产估值：${formattedInvestmentMoney} 元\n` +
+            `活期余额：${formattedCurrentBalance} 元\n\n` +
+            `您想做什么：`;
 
         // 设置文本居中对齐
         this.label.horizontalAlign = HorizontalTextAlignment.CENTER;
         this.label.verticalAlign = VerticalTextAlignment.CENTER;
-        
+
         // 设置字体颜色为 #000000（黑色）
         this.label.color = new Color(0, 0, 0, 255);
-    }
-
-    /**
-     * 更新时间
-     * @param mode 模式：0 - 重置为第1年第1月；1 - 月份+1
-     */
-    changeTime(mode: number) {
-        let year = this.getGlobalVariable('year', 1);
-        let month = this.getGlobalVariable('month', 1);
-
-        if (mode === 0) {
-            // 重置为第1年第1月
-            year = 1;
-            month = 1;
-        } else if (mode === 1) {
-            // 月份+1
-            month += 1;
-            if (month > 12) {
-                month = 1;
-                year += 1;
-            }
-        }
-
-        // 保存到本地存储
-        localStorage.setItem('year', JSON.stringify(year));
-        localStorage.setItem('month', JSON.stringify(month));
-
-        console.log("当前时间:", `第 ${year} 年第 ${month} 月`);
-
-        // 更新文本内容
-        this.updateText();
     }
 
     /**
@@ -75,21 +87,5 @@ export class IntroduceText extends Component {
             minimumFractionDigits: 2, // 最少保留两位小数
             maximumFractionDigits: 2, // 最多保留两位小数
         });
-    }
-
-    /**
-     * 从本地存储中读取全局变量，如果不存在则设置默认值
-     * @param key 变量名
-     * @param defaultValue 默认值
-     * @returns 读取的值或默认值
-     */
-    private getGlobalVariable(key: string, defaultValue: number): number {
-        const savedValue = localStorage.getItem(key);
-        if (savedValue) {
-            return JSON.parse(savedValue);
-        } else {
-            localStorage.setItem(key, JSON.stringify(defaultValue));
-            return defaultValue;
-        }
     }
 }

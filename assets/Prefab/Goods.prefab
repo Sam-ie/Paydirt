@@ -37,7 +37,7 @@
     "_lpos": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": 128,
+      "y": 125,
       "z": 0
     },
     "_lrot": {
@@ -376,7 +376,7 @@
       "b": 0,
       "a": 255
     },
-    "_string": "物品              售价            涨落        数量",
+    "_string": " 物品                售价           涨落      数量",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
     "_actualFontSize": 14,
@@ -549,7 +549,7 @@
         "__id__": 20
       }
     ],
-    "_active": false,
+    "_active": true,
     "_components": [
       {
         "__id__": 26
@@ -860,7 +860,7 @@
       "__id__": 23
     },
     "_direction": 1,
-    "_enableAutoHide": true,
+    "_enableAutoHide": false,
     "_autoHideTime": 1,
     "_id": ""
   },
@@ -1332,6 +1332,6 @@
       "__id__": 0
     },
     "fileId": "3enhiqRbpARJ/FnIiKxl1S",
-    "targetOverrides": null
+    "targetOverrides": []
   }
 ]

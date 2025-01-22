@@ -16,7 +16,7 @@ export class TextTypingEffect extends Component {
     private index: number = 0;
     private isTyping: boolean = true;
     private timer: number = 0;
-    private typingSpeed: number = 0.25; // 每个字的显示间隔（秒）
+    private typingSpeed: number = 0.22; // 每个字的显示间隔（秒）
     private isWaiting: boolean = false; // 是否在等待 2 秒
     private isWhiteTextShowing: boolean = false; // 是否正在显示白色文本
 

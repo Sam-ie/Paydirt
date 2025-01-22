@@ -1,5 +1,7 @@
+// SelectSceneEvents.ts
 import { _decorator, Component, Node, EventTouch, director } from 'cc';
 import EventConstants from '../Startup/EventConstants'; // 导入全局事件名称
+import { Paydirt } from './Paydirt'; // 导入 Paydirt
 const { ccclass, property } = _decorator;
 
 @ccclass('SelectSceneEvents')
@@ -19,9 +21,6 @@ export class SelectSceneEvents extends Component {
 
     @property(Node) // 绑定 TimeJump 按钮节点
     timeJumpButton: Node = null;
-
-    @property(Node) // 绑定 IntroduceText 脚本所在的节点
-    introduceTextNode: Node = null;
 
     private isButtonPressed: boolean = false; // 标记按钮是否被按住
 
@@ -92,11 +91,5 @@ export class SelectSceneEvents extends Component {
 
         // 触发时间跳跃事件
         director.emit(EventConstants.TIME_JUMP_EVENT);
-
-        // 调用 IntroduceText 脚本的 changeTime 方法，传入 1 表示月份+1
-        const introduceText = this.introduceTextNode.getComponent('IntroduceText');
-        if (introduceText) {
-            introduceText.changeTime(1);
-        }
     }
 }

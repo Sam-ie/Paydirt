@@ -71,9 +71,9 @@ export class ChooseAmount extends Component {
      * 获取当前选中的 item
      */
     getCurrentItem() {
-        const generateItems = this.generateItemsNode.getComponent('GenarateItems');
-        if (generateItems) {
-            this.currentItem = generateItems.getSelectedItemData();
+        const marketController = this.generateItemsNode.getComponent('MarketController');
+        if (marketController) {
+            this.currentItem = marketController.getSelectedItemData();
         } else {
             console.error('GenarateItems 组件未找到');
         }
@@ -166,7 +166,6 @@ export class ChooseAmount extends Component {
         this.getCurrentItem();
 
         let maxValue = 0;
-        console.log(this.currentItem);
         if (this.currentItem.id.startsWith('g')) {
             // Goods 类
             maxValue = this.currentItem.referenceQuantity - this.currentItem.occupiedQuantity;
@@ -187,7 +186,6 @@ export class ChooseAmount extends Component {
 
         const value = parseInt(this.tradeNumber.string, 10);
         if (isNaN(value)) {
-            console.error('TradeNumber 不是有效的数字');
             return;
         }
 

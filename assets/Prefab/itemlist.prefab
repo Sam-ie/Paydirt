@@ -178,7 +178,7 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 138.1337890625,
+      "width": 142.7578125,
       "height": 25.2
     },
     "_anchorPoint": {
@@ -217,9 +217,9 @@
     "_string": "木材    10   +5%  1000",
     "_horizontalAlign": 0,
     "_verticalAlign": 0,
-    "_actualFontSize": 14,
-    "_fontSize": 14,
-    "_fontFamily": "Arial",
+    "_actualFontSize": 12,
+    "_fontSize": 12,
+    "_fontFamily": "Consolas",
     "_lineHeight": 20,
     "_overflow": 0,
     "_enableWrapText": true,
