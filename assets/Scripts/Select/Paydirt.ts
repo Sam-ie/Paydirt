@@ -20,7 +20,7 @@ export class Paydirt {
     private introduceText: IntroduceText | null = null;
 
     // 初次场景加载时更新用
-    public onLoad: boolean[] = [true, true, true, true, true];
+    // public onLoad: boolean[] = [true, true, true, true, true];
 
     private constructor() {
         // 从本地存储加载数据

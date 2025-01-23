@@ -8,6 +8,7 @@ export class Goods {
     priceChangePercentage: number; // 价格升降百分比
     referenceQuantity: number; // 参考商品数量
     occupiedQuantity: number; // 其他人占用的商品数量
+    myQuantity: number; // 持有数量
 
     constructor(
         id: string,
@@ -16,7 +17,8 @@ export class Goods {
         currentPrice: number,
         priceChangePercentage: number,
         referenceQuantity: number,
-        occupiedQuantity: number
+        occupiedQuantity: number,
+        myQuantity: number = 0 // 默认值为 0
     ) {
         this.id = id;
         this.name = name;
@@ -25,6 +27,7 @@ export class Goods {
         this.priceChangePercentage = priceChangePercentage;
         this.referenceQuantity = referenceQuantity;
         this.occupiedQuantity = occupiedQuantity;
+        this.myQuantity = myQuantity;
     }
 }
 
@@ -58,23 +61,23 @@ export interface ItemData {
 
 // 默认静态 Goods 数组
 export const defaultGoods: Goods[] = [
-    new Goods('g1', '棒棒糖    ', 3, 3, 0, 10000, 0),
-    new Goods('g2', '奶茶      ', 10, 10, 0, 4000, 0),
-    new Goods('g3', '畅销书    ', 30, 30, 0, 1600, 0),
-    new Goods('g4', '运动鞋    ', 100, 100, 0, 640, 0),
-    new Goods('g5', '休闲外套  ', 300, 300, 0, 256, 0),
-    new Goods('g6', '智能手机  ', 1000, 1000, 0, 768, 0),
-    new Goods('g7', '笔记本电脑', 3000, 3000, 0, 307, 0),
-    new Goods('g8', '摩托车    ', 10000, 10000, 0, 921, 0),
-    new Goods('g9', '珠宝首饰  ', 30000, 30000, 0, 369, 0),
-    new Goods('g10', '小轿车    ', 100000, 100000, 0, 1107, 0),
-    new Goods('g11', '豪华轿车  ', 300000, 300000, 0, 443, 0),
-    new Goods('g12', '小户型公寓', 1000000, 1000000, 0, 1329, 0),
-    new Goods('g13', '电动超跑  ', 3000000, 3000000, 0, 532, 0),
-    new Goods('g14', '豪华别墅  ', 10000000, 10000000, 0, 1596, 0),
-    new Goods('g15', '私人飞机  ', 30000000, 30000000, 0, 639, 0),
-    new Goods('g16', '豪华游艇  ', 100000000, 100000000, 0, 1917, 0),
-    new Goods('g17', '私人岛屿  ', 300000000, 300000000, 0, 767, 0),
+    new Goods('g1', '棒棒糖    ', 3, 3, 0, 10000, 0, 0),
+    new Goods('g2', '奶茶      ', 10, 10, 0, 4000, 0, 0),
+    new Goods('g3', '畅销书    ', 30, 30, 0, 1600, 0, 0),
+    new Goods('g4', '运动鞋    ', 100, 100, 0, 640, 0, 0),
+    new Goods('g5', '休闲外套  ', 300, 300, 0, 256, 0, 0),
+    new Goods('g6', '智能手机  ', 1000, 1000, 0, 768, 0, 0),
+    new Goods('g7', '笔记本电脑', 3000, 3000, 0, 307, 0, 0),
+    new Goods('g8', '摩托车    ', 10000, 10000, 0, 921, 0, 0),
+    new Goods('g9', '珠宝首饰  ', 30000, 30000, 0, 369, 0, 0),
+    new Goods('g10', '小轿车    ', 100000, 100000, 0, 1107, 0, 0),
+    new Goods('g11', '豪华轿车  ', 300000, 300000, 0, 443, 0, 0),
+    new Goods('g12', '小户型公寓', 1000000, 1000000, 0, 1329, 0, 0),
+    new Goods('g13', '电动超跑  ', 3000000, 3000000, 0, 532, 0, 0),
+    new Goods('g14', '豪华别墅  ', 10000000, 10000000, 0, 1596, 0, 0),
+    new Goods('g15', '私人飞机  ', 30000000, 30000000, 0, 639, 0, 0),
+    new Goods('g16', '豪华游艇  ', 100000000, 100000000, 0, 1917, 0, 0),
+    new Goods('g17', '私人岛屿  ', 300000000, 300000000, 0, 767, 0, 0),
 ];
 
 // 商品列表
@@ -96,7 +99,8 @@ export function loadGoodsFromLocalStorage() {
                     item.currentPrice,
                     item.priceChangePercentage,
                     item.referenceQuantity,
-                    item.occupiedQuantity
+                    item.occupiedQuantity,
+                    item.myQuantity
                 )
         );
     } else {
@@ -109,7 +113,8 @@ export function loadGoodsFromLocalStorage() {
                 goods.currentPrice,
                 goods.priceChangePercentage,
                 goods.referenceQuantity,
-                goods.occupiedQuantity
+                goods.occupiedQuantity,
+                goods.myQuantity 
             );
             initializeNewGoods(newGoods); // 对新商品进行初始化
             return newGoods;
@@ -190,6 +195,7 @@ export function timePass() {
         const rate = parseFloat((Math.random() * 40 - 20).toFixed(2));
         const ratio = Math.min(Math.max((50 + goods.priceChangePercentage + rate) / 100, 0), 1);
         goods.occupiedQuantity = Math.round(goods.referenceQuantity * ratio);
+        goods.occupiedQuantity = Math.min(goods.occupiedQuantity, goods.referenceQuantity - goods.myQuantity);
     });
 
     warehouseList.forEach((warehouse) => {
@@ -204,7 +210,7 @@ export function timePass() {
 }
 
 /**
- * 对新添加的商品进行一次类似 timePass 的操作
+ * 对新添加的商品进行一次初始化
  * @param goods 新添加的商品
  */
 export function initializeNewGoods(goods: Goods) {

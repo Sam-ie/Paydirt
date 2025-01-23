@@ -37,6 +37,7 @@ export class MarketController extends Component {
         // 获取 Paydirt 实例
         this.paydirt = Paydirt.getInstance();
 
+
         // 从本地存储加载商品数据
         loadGoodsFromLocalStorage();
 
@@ -87,7 +88,7 @@ export class MarketController extends Component {
      */
     generateGoodsStringList(): ItemData[] {
         return goodsList
-            .filter((goods) => goods.referenceQuantity - goods.occupiedQuantity !== 0) // 过滤掉 availableQuantity 为 0 的商品
+            .filter((goods) => goods.referenceQuantity - goods.occupiedQuantity - goods.myQuantity !== 0) // 过滤掉 availableQuantity 为 0 的商品
             .map((goods) => {
                 const currentPriceStr = goods.currentPrice.toLocaleString('en-US', {
                     minimumFractionDigits: 2,
@@ -96,7 +97,7 @@ export class MarketController extends Component {
 
                 const priceChangePercentageStr = `${goods.priceChangePercentage.toFixed(1)}%`.padStart(7, ' ');
 
-                const availableQuantity = (goods.referenceQuantity - goods.occupiedQuantity).toString().padStart(8, ' ');
+                const availableQuantity = (goods.referenceQuantity - goods.occupiedQuantity - goods.myQuantity).toString().padStart(8, ' '); // 更新 availableQuantity 计算逻辑
 
                 const labelText = `${goods.name}${currentPriceStr}${priceChangePercentageStr}${availableQuantity}`;
 
@@ -179,7 +180,6 @@ export class MarketController extends Component {
             console.error('选中的 item 没有 itemID');
             return null;
         }
-
         if (itemID.startsWith('g')) {
             const goods = goodsList.find((item) => item.id === itemID);
             return goods || null;

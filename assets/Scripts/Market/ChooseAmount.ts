@@ -1,4 +1,5 @@
 import { _decorator, Component, Node, EditBox, Button, EventTouch } from 'cc';
+import { Goods, Warehouse, goodsList, warehouseList, saveGoodsToLocalStorage, saveWarehouseToLocalStorage } from './Market';
 const { ccclass, property } = _decorator;
 
 @ccclass('ChooseAmount')
@@ -75,7 +76,7 @@ export class ChooseAmount extends Component {
         if (marketController) {
             this.currentItem = marketController.getSelectedItemData();
         } else {
-            console.error('GenarateItems 组件未找到');
+            console.error('MarketController 组件未找到');
         }
     }
 
@@ -93,7 +94,7 @@ export class ChooseAmount extends Component {
         let maxValue = 0;
         if (this.currentItem.id.startsWith('g')) {
             // Goods 类
-            maxValue = this.currentItem.referenceQuantity - this.currentItem.occupiedQuantity;
+            maxValue = this.currentItem.referenceQuantity - this.currentItem.occupiedQuantity - this.currentItem.myQuantity;
         } else if (this.currentItem.id.startsWith('w')) {
             // Warehouse 类
             maxValue = this.currentItem.quantity;
@@ -168,7 +169,7 @@ export class ChooseAmount extends Component {
         let maxValue = 0;
         if (this.currentItem.id.startsWith('g')) {
             // Goods 类
-            maxValue = this.currentItem.referenceQuantity - this.currentItem.occupiedQuantity;
+            maxValue = this.currentItem.referenceQuantity - this.currentItem.occupiedQuantity - this.currentItem.myQuantity;
         } else if (this.currentItem.id.startsWith('w')) {
             // Warehouse 类
             maxValue = this.currentItem.quantity;
@@ -189,7 +190,60 @@ export class ChooseAmount extends Component {
             return;
         }
 
-        console.log('选中的 item:', this.currentItem);
-        console.log('TradeNumber:', value);
+        if (this.currentItem.id.startsWith('g')) {
+            // 选中 Goods 条目
+            this.currentItem.myQuantity += value; // 增加 myQuantity
+
+            // 将 Goods 的 id 首字母 g 替换为 w，生成 Warehouse 的 id
+            const warehouseId = 'w' + this.currentItem.id.slice(1);
+
+            // 查找对应的 Warehouse 条目
+            const warehouseItem = warehouseList.find((item) => item.id === warehouseId);
+            if (warehouseItem) {
+                warehouseItem.quantity += value; // 增加 Warehouse 的 quantity
+            } else {
+                // 如果 Warehouse 中没有对应条目，则创建新条目
+                warehouseList.push(new Warehouse(
+                    warehouseId, // 使用转换后的 id
+                    this.currentItem.name,
+                    this.currentItem.currentPrice, // 使用当前价格作为平均价格
+                    0, // 初始价格变化百分比为 0
+                    value // 初始数量为 TradeNumber 的值
+                ));
+            }
+        } else if (this.currentItem.id.startsWith('w')) {
+            // 选中 Warehouse 条目
+            this.currentItem.quantity -= value; // 减少 Warehouse 的 quantity
+
+            // 如果 quantity 减去 value 后为 0，则删除该 Warehouse 条目
+            if (this.currentItem.quantity === 0) {
+                const index = warehouseList.findIndex((item) => item.id === this.currentItem.id);
+                if (index !== -1) {
+                    warehouseList.splice(index, 1); // 从数组中删除该条目
+                }
+            }
+
+            // 将 Warehouse 的 id 首字母 w 替换为 g，生成 Goods 的 id
+            const goodsId = 'g' + this.currentItem.id.slice(1);
+
+            // 查找对应的 Goods 条目
+            const goodsItem = goodsList.find((item) => item.id === goodsId);
+            if (goodsItem) {
+                goodsItem.myQuantity -= value; // 减少 Goods 的 myQuantity
+            }
+        }
+
+        // 保存更新后的数据到本地存储
+        saveGoodsToLocalStorage();
+        saveWarehouseToLocalStorage();
+
+        // 更新显示
+        const marketController = this.generateItemsNode.getComponent('MarketController');
+        if (marketController) {
+            const goodsStringList = marketController.generateGoodsStringList();
+            const warehouseStringList = marketController.generateWarehouseStringList();
+            marketController.updateText('goods', goodsStringList);
+            marketController.updateText('warehouse', warehouseStringList);
+        }
     }
 }
