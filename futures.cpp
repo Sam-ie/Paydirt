@@ -106,8 +106,10 @@ void Futures::paddingWindow(Future_goods fg, int place)
                 }
                 if (cur_location==cur_serial_num)
                 {
-                    // if (fg.last_fluctuation<0)
-                    //     item->set
+                    if (fg.last_fluctuation<=0)
+                        item->setData(Qt::FontRole, QColor("green"));
+                    if (fg.last_fluctuation>0)
+                        item->setData(Qt::FontRole, QColor("red"));
                     item->setText(str);
                     return;
                 }
@@ -124,7 +126,7 @@ void Futures::paddingWindow(Future_goods fg, int place)
     else if (place==2)
     {
         QString str=fillFormat(fg.goods,5,"  ")+" "+fillFormat(QString::number(fg.buy_price,'f',2),11," ")+" "+
-                      fillFormat(QString::number(fg.player_num,'f',0),6," ")+" "+fillFormat(QString::number(fg.lowest_buy_price,'f',2),11," ");
+                      fillFormat(QString::number(fg.player_num,'f',0),6," ")+" "+fillFormat(QString::number(fg.cur_price,'f',2),11," ")+"    "+fillFormat(QString::number(fg.last_fluctuation,'f',2),6," ");
         QList<QListWidgetItem *> items = ui->listWidget_2->findItems("*", Qt::MatchWildcard);
         if (!items.empty())
         {
@@ -150,6 +152,10 @@ void Futures::paddingWindow(Future_goods fg, int place)
                     }
                     else
                     {
+                        if (fg.buy_price>=fg.cur_price)
+                            item->setData(Qt::FontRole, QColor("green"));
+                        if (fg.buy_price<fg.cur_price)
+                            item->setData(Qt::FontRole, QColor("red"));
                         item->setText(str);
                         ui->listWidget_2->setCurrentItem(item);
                     }
@@ -212,6 +218,8 @@ void Futures::on_pushButton_2_clicked()
             sub_num=(int)(py->getCur_money()/fgs[fg_num].cur_price);
             ui->lineEdit->setText(QString::number(sub_num));
         }
+        if (sub_num==0)
+            return;
         fgs[fg_num].lowest_buy_price=std::min(fgs[fg_num].cur_price,fgs[fg_num].lowest_buy_price);
         fgs[fg_num].buy_price=(fgs[fg_num].buy_price*fgs[fg_num].player_num+fgs[fg_num].cur_price*sub_num)/(fgs[fg_num].player_num+sub_num);
         fgs[fg_num].player_num+=sub_num;
@@ -278,7 +286,7 @@ void Futures::on_pushButton_3_clicked()
 void Futures::on_pushButton_4_clicked()
 {
     Player* py=Player::instance();
-    double cost_money=2500*pow(8,level);
+    double cost_money=1250*pow(8,level);
     if (cost_money<py->getCur_money())
     {
         upgrade=true;
@@ -360,8 +368,6 @@ void Futures::do_update()
             else
                 total_fluctuation_fix=-fgs[i].total_fluctuation/10;
 
-            qDebug()<<random_rate<<cur_rate<<py->getWhole_Market_Fluctuation()<<total_fluctuation_fix;
-
             cur_rate+=py->getWhole_Market_Fluctuation()+total_fluctuation_fix;
             cur_rate=std::min(std::max(cur_rate,-10.0),10.0);
             py->setFuture_money((double)fgs[i].player_num*fgs[i].cur_price*cur_rate*0.01);
@@ -371,9 +377,11 @@ void Futures::do_update()
             double others_num_rate=((py->getDifficulty()-1))*fgs[i].last_fluctuation*0.025+0.5;
             fgs[i].others_num=std::min(others_num_rate*fgs[i].total_num,1.0*fgs[i].total_num*pow(4,std::max(0,level-fgs[i].goods_level))-fgs[i].player_num);
 
-            if (py->getRound()%26==1)
-                fgs[i].lowest_buy_price=std::min(fgs[i].buy_price,fgs[i].cur_price);
+            // if (py->getRound()%26==1)
+            //     fgs[i].lowest_buy_price=std::min(fgs[i].buy_price,fgs[i].cur_price);
             paddingWindow(fgs[i],1);
+            if (fgs[i].player_num>0)
+                paddingWindow(fgs[i],2);
         }
     }
     update();
@@ -411,7 +419,7 @@ void Futures::paintEvent(QPaintEvent *event)
     str=templatestr.arg(QString::number(py->getWhole_Market_Fluctuation(),'f',2));
     ui->textEdit_2->setText(str);
 
-    if (py->getCur_money()>=2500*pow(8,level)&&level<5&&!upgrade)
+    if (py->getCur_money()>=1250*pow(8,level)&&level<5&&!upgrade)
         ui->pushButton_4->setEnabled(true);
     else
         ui->pushButton_4->setEnabled(false);

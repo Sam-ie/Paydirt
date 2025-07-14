@@ -5,5 +5,6 @@
         <file>res/RImage2.jpg</file>
         <file>res/RImage3.jpg</file>
         <file>res/RMusic1.wav</file>
+        <file>res/RImage4.jpg</file>
     </qresource>
 </RCC>

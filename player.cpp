@@ -61,10 +61,12 @@ void Player::setRound()
     {
         QRandomGenerator generator;
         generator.seed(QDateTime::currentDateTime().toMSecsSinceEpoch());
-        int random_rate = generator.bounded(800000)-100000*(difficulty+2);
+        int random_rate = generator.bounded(800000)-100000*(difficulty+1);
         //对应-2%——6% -3%——5% -4%——4% (1.04*0.96<1)
         whole_market_fluctuation = (double)random_rate/100000;
     }
+    if (round%40==17)
+        whole_market_fluctuation-=9-3*difficulty;
     Futures::instance()->do_update();
 }
 

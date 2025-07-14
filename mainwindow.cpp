@@ -55,7 +55,7 @@ void MainWindow::paintEvent(QPaintEvent *event)
     // 设置文本对齐方式
     ui->textEdit->setFont(font); // 设置字体
     //ui->textEdit->setAlignment(Qt::AlignVCenter); // 设置居中对齐(无效？)
-    QString templatestr="                                    目标：\n              30年内挣够一个小目标(1亿元)\n                              难度：%1\n"
+    QString templatestr="                                    目标：\n              40年内挣够一个小目标(1亿元)\n                              难度：%1\n"
                           "               玩家总资金：%2 元\n                   玩家现金：%3 元\n                       现在是第 %4 年 %5 月";
     QString str=templatestr.arg(difficulty_name[py->getDifficulty()])
                       .arg(QString::number(py->getCur_money()+py->getFuture_money(),'f',2))
@@ -75,15 +75,43 @@ void MainWindow::paintEvent(QPaintEvent *event)
 
 void MainWindow::on_pushButton_2_clicked()
 {
-    Help *help = Help::instance(this);
-    help->show();
+    Antique *antique=Antique::instance();
+    if (this->isMaximized())
+    {
+        antique->showMaximized();
+    }
+    else if(this->isFullScreen())
+    {
+        antique->showFullScreen();
+    }
+    else
+    {
+        antique->move(this->pos()); // 设置位置，使其与主界面对齐
+        antique->resize(this->size()); // 设置大小与主界面相同
+        antique->show();
+    }
+    this->close();
 }
 
 
 void MainWindow::on_pushButton_3_clicked()
 {
-    Help *help = Help::instance(this);
-    help->show();
+    Lottery *lottery=Lottery::instance();
+    if (this->isMaximized())
+    {
+        lottery->showMaximized();
+    }
+    else if(this->isFullScreen())
+    {
+        lottery->showFullScreen();
+    }
+    else
+    {
+        lottery->move(this->pos()); // 设置位置，使其与主界面对齐
+        lottery->resize(this->size()); // 设置大小与主界面相同
+        lottery->show();
+    }
+    this->close();
 }
 
 

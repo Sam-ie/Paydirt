@@ -10,8 +10,10 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    antique.cpp \
     futures.cpp \
     help.cpp \
+    lottery.cpp \
     main.cpp \
     entrance.cpp \
     mainwindow.cpp \
@@ -19,17 +21,21 @@ SOURCES += \
     select_difficulty.cpp
 
 HEADERS += \
+    antique.h \
     entrance.h \
     futures.h \
     help.h \
+    lottery.h \
     mainwindow.h \
     player.h \
     select_difficulty.h
 
 FORMS += \
+    antique.ui \
     entrance.ui \
     futures.ui \
     help.ui \
+    lottery.ui \
     mainwindow.ui \
     select_difficulty.ui
 
