@@ -13,6 +13,7 @@ SOURCES += \
     antique.cpp \
     futures.cpp \
     help.cpp \
+    item.cpp \
     lottery.cpp \
     main.cpp \
     entrance.cpp \
@@ -25,6 +26,7 @@ HEADERS += \
     entrance.h \
     futures.h \
     help.h \
+    item.h \
     lottery.h \
     mainwindow.h \
     player.h \
