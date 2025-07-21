@@ -15,7 +15,8 @@ Antique::Antique(QWidget *parent)
 {
     ui->setupUi(this);
 
-
+    Item i;
+    qDebug() << i.generateAntique(7).item.description;
 }
 
 Antique::~Antique()

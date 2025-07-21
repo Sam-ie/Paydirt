@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include "mainwindow.h"
+#include "item.h"
 
 namespace Ui {
 class Antique;
@@ -69,7 +70,8 @@ private:
     int    insight;
     int    luck;
     int    shop_level;
-    int    reputation_to_year[7]={10,30,80,200,500,1250,6500};
+    int    reputation;
+
 };
 
 #endif // ANTIQUE_H
