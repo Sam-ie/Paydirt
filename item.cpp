@@ -56,6 +56,75 @@ Item::Item()
 
 }
 
+double Item::calculateTruePrice(Antique_goods antique)
+{
+    // 计算年份倍率（线性插值）
+    double yearRange = antique.item.latest_year - antique.item.earliest_year;
+    double yearFactor = 1.0;
+    if (yearRange > 0) {
+        double t = static_cast<double>(antique.year - antique.item.earliest_year) / yearRange;
+        yearFactor = 1.2 - t * 0.4; // 从1.2线性变化到0.8
+    }
+
+    // 计算真实价格
+    double true_price = antique.item.base_price *
+                        rarity_rate[antique.item.rarity] *
+                        yearFactor *
+                        (antique.is_fake ? 0.2 : 1.0);
+
+    // 保留4位有效数字
+    return roundToSignificantDigits(true_price, 4);
+}
+
+// 在链表末尾添加古董
+void Item::appendAntique(Antique_goods antique)
+{
+    antiqueList.push_back(antique);
+}
+
+// 删除指定id的古董
+bool Item::removeAntiqueById(int id)
+{
+    auto it = std::find_if(antiqueList.begin(), antiqueList.end(),
+                           [id](Antique_goods item) { return item.id == id; });
+
+    if (it != antiqueList.end()) {
+        antiqueList.erase(it);
+        return true;
+    }
+    return false;
+}
+
+// 查找指定id的古董
+Item::Antique_goods* Item::findAntique(int id)
+{
+    auto it = std::find_if(antiqueList.begin(), antiqueList.end(),
+                           [id](Antique_goods item) { return item.id == id; });
+
+    return (it != antiqueList.end()) ? &(*it) : nullptr;
+}
+
+Item::Antique_goods* Item::findAntique()
+{
+    if (antiqueList.empty()) {
+        return nullptr;
+    }
+
+    // 生成随机索引
+    int randomIndex = QRandomGenerator::global()->bounded(static_cast<int>(antiqueList.size()));
+
+    // 获取对应位置的迭代器
+    auto it = antiqueList.begin();
+    std::advance(it, randomIndex);
+
+    return &(*it);
+}
+
+double Item::inventoryRate()
+{
+    return antiqueList.size() / max_list_size;
+}
+
 Item::Antique_goods Item::generateAntique(int reputation)
 {
     // 1. 获取年份范围
@@ -64,7 +133,7 @@ Item::Antique_goods Item::generateAntique(int reputation)
 
     // 2. 找出符合条件的项目
     QList<int> validIndices;
-    for (int i = 0; i < 50; i++) {
+    for (int i = 0; i < 40; i++) {
         // 检查年份区间是否重叠
         if (name_list[i].earliest_year <= maxYear &&
             name_list[i].latest_year >= minYear) {
@@ -83,36 +152,64 @@ Item::Antique_goods Item::generateAntique(int reputation)
         );
 
     // 5. 随机生成状态
-    int status = QRandomGenerator::global()->bounded(7);
+    int status = 0; // 默认"报废"
+    double randVal = QRandomGenerator::global()->generateDouble(); // 生成0-1之间的随机数
+
+    if (randVal < 0.1) {
+        status = 0;      // "报废" 10%
+    } else if (randVal < 0.2) {
+        status = 1;      // "极差" 10%
+    } else if (randVal < 0.3) {
+        status = 2;      // "差" 10%
+    } else if (randVal < 0.45) {
+        status = 3;      // "一般" 15%
+    } else if (randVal < 0.7) {
+        status = 4;      // "良好" 25% (0.45-0.7)
+    } else if (randVal < 0.9) {
+        status = 5;      // "极佳" 20% (0.7-0.9)
+    } else {
+        status = 6;      // "完美" 10% (0.9-1.0)
+    }
 
     // 6. 判断是否为赝品
     bool is_fake = (QRandomGenerator::global()->bounded(100) < 5);
 
-    // 7. 计算年份倍率（线性插值）
-    double yearRange = selectedItem.latest_year - selectedItem.earliest_year;
-    double yearFactor = 1.0;
-    if (yearRange > 0) {
-        double t = static_cast<double>(year - selectedItem.earliest_year) / yearRange;
-        yearFactor = 1.2 - t * 0.4; // 从1.2线性变化到0.8
-    }
-
-    // 8. 计算真实价格
-    double true_price = selectedItem.base_price *
-                        rarity_rate[selectedItem.rarity] *
-                        yearFactor *
-                        (is_fake ? 0.2 : 1.0);
-
-    // 9. 保留4位有效数字
-    true_price = roundToSignificantDigits(true_price, 4);
-
-    // 10. 创建并返回Antique_goods对象
-    return Antique_goods{
+    // 7. 创建临时对象用于计算价格
+    Antique_goods temp{
         next_id++,        // id
         selectedItem,     // item
         year,             // year
         status,           // status
-        true_price,       // true_price
-        -1.0,            // estimated_price (初始为-1)
-        is_fake           // is_fake
+        0.0,              // true_price (临时值)
+        -1.0,             // estimated_price (初始为-1)
+        is_fake,          // is_fake
+        false
     };
+
+    // 8. 计算真实价格
+    temp.true_price = calculateTruePrice(temp);
+
+    // 9. 添加到链表
+    appendAntique(temp);
+
+    return temp;
+}
+
+double Item::modifyAntique(Antique_goods goods)
+{
+    Item::Antique_goods* found = findAntique(goods.id);
+    if (found)
+    {
+        *found = goods;
+    }
+
+    // 4. 重新计算真实价格
+    found->true_price = calculateTruePrice(goods);
+
+    return found->true_price;
+}
+
+void Item::changeMaxListSize(int shop_level)
+{
+    max_list_size = 8 + (int(shop_level/2))*2;
 }

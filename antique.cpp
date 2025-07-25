@@ -15,8 +15,7 @@ Antique::Antique(QWidget *parent)
 {
     ui->setupUi(this);
 
-    Item i;
-    qDebug() << i.generateAntique(7).item.description;
+
 }
 
 Antique::~Antique()
@@ -92,7 +91,7 @@ void Antique::on_upgrade_clicked()
 
 void Antique::on_next_week_clicked()
 {
-    Player::instance()->setRound();
+    updateAntique();
 }
 
 
@@ -116,3 +115,25 @@ void Antique::on_back_clicked()
     this->close();
 }
 
+void Antique::updateAntique()
+{
+    // 1. 生成新的古董物品
+    Item::Antique_goods newAntique = itemGenerator.generateAntique(reputation);
+
+    // 3. 准备要显示的文本
+    QString AntiqueString = QString("%1\t 年的 %2\n"
+                               "%3 %4\t 估价: %5\n")
+                           .arg((newAntique.year<0)?("公元前"+QString::number(-newAntique.year)):("公元  "+QString::number(newAntique.year)))
+                           .arg(newAntique.item.item_type)
+                           .arg(itemGenerator.status_list[newAntique.status])
+                           .arg(newAntique.is_fake?(newAntique.show_fake?"假货":"真货"):"真货")
+                           .arg(newAntique.estimated_price, 0, 'f', 2);
+
+    // 4. 添加到文本浏览器
+    ui->text_antique->setText(AntiqueString);
+
+    // 5. 自动滚动到底部
+    ui->text_antique->verticalScrollBar()->setValue(
+        ui->text_antique->verticalScrollBar()->maximum()
+        );
+}
