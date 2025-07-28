@@ -34,7 +34,7 @@
    </property>
    <item row="0" column="0">
     <widget class="QWidget" name="widget" native="true">
-     <layout class="QGridLayout" name="gridLayout_2">
+     <layout class="QGridLayout" name="gridLayout_2" columnstretch="2,1">
       <property name="leftMargin">
        <number>3</number>
       </property>
@@ -52,37 +52,20 @@
       </property>
       <item row="0" column="0">
        <widget class="QWidget" name="widget_2" native="true">
-        <layout class="QGridLayout" name="gridLayout_4">
-         <item row="1" column="0">
-          <widget class="QTextBrowser" name="text_introduction">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
+        <layout class="QGridLayout" name="gridLayout_4" rowstretch="3,5,3,3">
+         <item row="3" column="0">
+          <widget class="QWidget" name="widget_7" native="true">
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>90</height>
+            </size>
            </property>
-           <property name="font">
-            <font>
-             <family>华文楷体</family>
-             <pointsize>20</pointsize>
-            </font>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0">
-          <widget class="QTextBrowser" name="text_antique">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="font">
-            <font>
-             <family>华文楷体</family>
-             <pointsize>20</pointsize>
-            </font>
-           </property>
+           <layout class="QGridLayout" name="gridLayout_11">
+            <item row="0" column="0">
+             <widget class="QTextBrowser" name="text_player_level"/>
+            </item>
+           </layout>
           </widget>
          </item>
          <item row="2" column="0">
@@ -161,19 +144,36 @@
            </layout>
           </widget>
          </item>
-         <item row="3" column="0">
-          <widget class="QWidget" name="widget_7" native="true">
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>90</height>
-            </size>
+         <item row="1" column="0">
+          <widget class="QTextBrowser" name="text_introduction">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
            </property>
-           <layout class="QGridLayout" name="gridLayout_11">
-            <item row="0" column="0">
-             <widget class="QTextBrowser" name="text_player_level"/>
-            </item>
-           </layout>
+           <property name="font">
+            <font>
+             <family>华文楷体</family>
+             <pointsize>16</pointsize>
+            </font>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QTextBrowser" name="text_antique">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="font">
+            <font>
+             <family>华文楷体</family>
+             <pointsize>20</pointsize>
+            </font>
+           </property>
           </widget>
          </item>
         </layout>
@@ -181,7 +181,7 @@
       </item>
       <item row="0" column="1">
        <widget class="QWidget" name="widget_3" native="true">
-        <layout class="QGridLayout" name="gridLayout_3">
+        <layout class="QGridLayout" name="gridLayout_3" rowstretch="4,3">
          <item row="0" column="0">
           <widget class="QWidget" name="widget_5" native="true">
            <property name="sizePolicy">
@@ -190,7 +190,7 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
-           <layout class="QGridLayout" name="gridLayout_6">
+           <layout class="QGridLayout" name="gridLayout_6" rowstretch="2,1,1,1">
             <property name="leftMargin">
              <number>20</number>
             </property>
@@ -230,10 +230,22 @@
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
+              <property name="font">
+               <font>
+                <family>华文楷体</family>
+                <pointsize>20</pointsize>
+               </font>
+              </property>
              </widget>
             </item>
             <item row="1" column="0">
              <widget class="QLabel" name="label">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="minimumSize">
                <size>
                 <width>0</width>
@@ -272,6 +284,12 @@
             </item>
             <item row="1" column="1">
              <widget class="QLabel" name="label_2">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
               <property name="minimumSize">
                <size>
                 <width>0</width>
@@ -332,7 +350,7 @@
          </item>
          <item row="1" column="0">
           <widget class="QWidget" name="widget_6" native="true">
-           <layout class="QGridLayout" name="gridLayout_7">
+           <layout class="QGridLayout" name="gridLayout_7" rowstretch="5,3">
             <item row="0" column="0">
              <widget class="QWidget" name="widget_8" native="true">
               <property name="minimumSize">
@@ -434,6 +452,12 @@
                    <horstretch>0</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>80</height>
+                  </size>
                  </property>
                  <property name="text">
                   <string>✔</string>

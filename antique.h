@@ -5,6 +5,7 @@
 #include <QScrollBar>
 #include "mainwindow.h"
 #include "item.h"
+#include "customer.h"
 
 namespace Ui {
 class Antique;
@@ -38,6 +39,8 @@ private:
     Ui::Antique *ui;
 
     void updateAntique();
+    void initClient();
+    void updateDialogue();
 
 
 private:
@@ -49,7 +52,12 @@ private:
     int    shop_level;
     int    reputation=7;
 
-    Item itemGenerator;
+    // 报价
+    double quote;
+
+    Customer& clientGenerator = Customer::instance();
+    Item& itemGenerator = Item::instance();
+    Customer::Client newClient;
 
 };
 

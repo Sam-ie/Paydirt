@@ -9,7 +9,15 @@
 class Customer
 {
 public:
-    Customer();
+    // 删除拷贝构造函数和赋值运算符
+    Customer(const Customer&) = delete;
+    Customer& operator=(const Customer&) = delete;
+
+    // 获取单例实例
+    static Customer& instance() {
+        static std::unique_ptr<Customer> instance(new Customer());
+        return *instance;
+    }
 
     struct Client
     {
@@ -22,21 +30,36 @@ public:
         bool    is_seller;
         int     pick_id;
         double  estimated_price;
+        double  current_price;
         double  highest_price;
         double  lowest_price;
         int     negotiation_available;
+        bool    deal;
     };
 
     // 生成顾客的函数
-    Client generateClient(int reputation, int eloquence);
+    Client generateClient(int reputation, int eloquence, int luck);
 
+    QString generateDialogue(Customer::Client, bool flag, double quote, int luck);// 0为初始化，1为继续
 
 
 private:
-    static QStringList nameList;
+    QList<QString> names;  // 名字列表
+    QList<QString> surnames;  // 姓氏列表
+    QList<QString> prologue_sell;
+    QList<QString> prologue_buy;
+    QList<QString> dialogue_sell;
+    QList<QString> dialogue_buy;
+    QList<QString> leave_sell;
+    QList<QString> leave_buy;
+    QList<QString> final_ask_sell;
+    QList<QString> final_ask_buy;
+    QList<QString> deal_sell;
+    QList<QString> deal_buy;
 
-    Item* itemManager;
+    Item& itemManager = Item::instance();
 
+    Customer();
     double calculateEstimatedPrice(double basePrice, int ability, bool isSeller, bool isCollector, double eventFactor);
 
 };

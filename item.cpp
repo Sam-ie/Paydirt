@@ -1,5 +1,7 @@
 #include "item.h"
 
+#include <QDebug>
+
 Item::Item()
 {
     name_list[0]={-4590,-4340,6,"瓦尔纳黄金女性护身符","保加利亚的瓦尔纳考古遗址和杜兰库拉克新石器时代遗址出土的新石器时期晚期，到铜石并用的史前时期的黄金加工首饰。这些金首饰被考古学家认为属于迄今发掘出的最早的经过加工的黄金饰品，被称为“瓦尔纳黄金宝藏”。",1};
@@ -41,8 +43,8 @@ Item::Item()
     name_list[36]={-600,-500,6,"古希腊黑绘陶器","黑绘风格的繁盛与希腊奴隶制民主政治的形成和发展的步伐是完全一致的。黑绘式是在赤色或黄褐色的陶壁上，用黑色作剪影式的描绘，而物体的内部结构则以刻线手法表现。这一时期的陶器装饰图案主要展示人类和神话活动，场景从日常生活到英雄事迹和荷马史诗，从神的世界到文艺体育。这一时期的主要描绘对象转移到了人。",1};
     name_list[37]={-530,-336,6,"古希腊红绘陶器","希腊文化日渐繁荣，艺术家们发现，把黑画红底反过来，能表现出更多细节。其效果较之黑纹样式的刻线显得更为灵活自如、丰富多彩。这种风格的发明，有助于绘饰者灵活自如地运用各种线条描绘人物动态、刻画人物神情，从而形成一种近似绘画的效果。",1};
     name_list[38]={-3000,400,6,"古埃及莎草纸文献","纸草文献是古代书写于纸莎草材料上的文献，又称纸莎草文献，其英文名“papyrus”为现代单词“paper”的词源。纸草以尼罗河三角洲的莎草科植物茎秆为原料，经截段、分层铺叠、挤压粘合、晾干打磨后制成页片，长篇幅文献需粘接成卷轴并附轴收纳，常存于陶罐或壁龛藏书洞内，内容涵盖契约、公文、书信及古典著作。",1};
-    name_list[39]={300,1000,6,"商代","",1};
-    name_list[40]={300,1000,6,"商代","",1};
+    name_list[39]={-685,-476,6,"春秋晚期青铜鉴","春秋中晚期失蜡法的出现，使青铜艺术迈向了一个全新的境界，宴乐、骑射、狩猎及水陆攻战为题材的活动画像纹首次出现。出现了一批新奇清秀的器形，做工精雕细镂、玲珑剔透 、瑰丽典重，异常的典雅辉煌。春秋晚期流行有盖的附耳鼎，新出现了敦、缶（fǒu）、扁壶、鉴、杯、卮（zhī）等新颖的器物。",1};
+    name_list[40]={-475,220,5,"战国时期动物饰牌","北方地区匈奴草原文化的遗存器物，主要为透雕动物铜饰牌，动物形首的青铜短刀、短剑、削及圆雕动物体的器物等，以及怪兽噬鹿、虎衔羊、虎噬马或驴、鹿、羊等小件动物铸制的腰带装饰品，雕饰生动而粗犷。制作时，表面经锉磨抛光后经过热处理，使青铜合金中的锡偏析与器表形成保护膜，因此其特征多为银灰色亮地子，表面锈蚀物较少。",1};
     name_list[41]={300,1000,6,"商代","",1};
     name_list[42]={300,1000,6,"商代","",1};
     name_list[43]={300,1000,6,"商代","",1};
@@ -96,18 +98,32 @@ bool Item::removeAntiqueById(int id)
 }
 
 // 查找指定id的古董
-Item::Antique_goods* Item::findAntique(int id)
+Item::Antique_goods Item::findAntique(int id)
 {
     auto it = std::find_if(antiqueList.begin(), antiqueList.end(),
-                           [id](Antique_goods item) { return item.id == id; });
+                           [id](const Antique_goods& item) { return item.id == id; });
 
-    return (it != antiqueList.end()) ? &(*it) : nullptr;
+    if (it != antiqueList.end()) {
+        return *it; // 返回找到的对象副本
+    } else {
+        // 返回一个特殊标记的无效对象
+        return Antique_goods{
+            -1,                    // id无效
+            item_name{},           // 空item_name
+            0, 0, 0.0, 0.0, false // 其他默认值
+        };
+    }
 }
 
-Item::Antique_goods* Item::findAntique()
+Item::Antique_goods Item::findAntique()
 {
     if (antiqueList.empty()) {
-        return nullptr;
+        // 返回无效对象
+        return Antique_goods{
+            -1,                    // id无效
+            item_name{},           // 空item_name
+            0, 0, 0.0, 0.0, false // 其他默认值
+        };
     }
 
     // 生成随机索引
@@ -117,7 +133,7 @@ Item::Antique_goods* Item::findAntique()
     auto it = antiqueList.begin();
     std::advance(it, randomIndex);
 
-    return &(*it);
+    return *it; // 返回对象副本
 }
 
 double Item::inventoryRate()
@@ -197,16 +213,24 @@ Item::Antique_goods Item::generateAntique(int reputation)
 
 double Item::modifyAntique(Antique_goods goods)
 {
-    Item::Antique_goods* found = findAntique(goods.id);
-    if (found)
-    {
-        *found = goods;
+    // 1. 查找并修改链表中的元素
+        auto it = std::find_if(antiqueList.begin(), antiqueList.end(),
+                       [goods](const Antique_goods& item) {
+                           return item.id == goods.id;
+                       });
+
+    if (it != antiqueList.end()) {
+        // 2. 直接修改链表中的元素
+        *it = goods;
+
+        // 3. 重新计算价格（修改链表中的版本）
+        it->true_price = calculateTruePrice(*it);
+
+        return it->true_price;
     }
 
-    // 4. 重新计算真实价格
-    found->true_price = calculateTruePrice(goods);
-
-    return found->true_price;
+    // 4. 如果没找到，返回0或抛出异常
+    return 0.0;
 }
 
 void Item::changeMaxListSize(int shop_level)

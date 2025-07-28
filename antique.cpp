@@ -15,7 +15,6 @@ Antique::Antique(QWidget *parent)
 {
     ui->setupUi(this);
 
-
 }
 
 Antique::~Antique()
@@ -91,7 +90,7 @@ void Antique::on_upgrade_clicked()
 
 void Antique::on_next_week_clicked()
 {
-    updateAntique();
+    initClient();
 }
 
 
@@ -115,25 +114,66 @@ void Antique::on_back_clicked()
     this->close();
 }
 
+void Antique::initClient()
+{
+    // 1. 生成新的客人
+    newClient = clientGenerator.generateClient(reputation, eloquence, luck);
+
+    // 2. 准备要显示的文本
+    QString clientString = QString("%1\t %2\n"
+                                   "%3\n")
+                               .arg(newClient.name)
+                               .arg(newClient.is_seller?"卖家":"买家")
+                               .arg(clientGenerator.generateDialogue(newClient, 1, quote, luck));
+
+    // 3. 添加到文本浏览器
+    ui->text_customer->setText(clientString);
+
+    if (newClient.pick_id!=-1)
+    {
+        updateAntique();
+    }
+}
+
 void Antique::updateAntique()
 {
-    // 1. 生成新的古董物品
-    Item::Antique_goods newAntique = itemGenerator.generateAntique(reputation);
+    // 1. 获取古董物品
+    Item::Antique_goods newAntique = itemGenerator.findAntique(newClient.pick_id);
 
-    // 3. 准备要显示的文本
+    // 2. 准备要显示的文本
     QString AntiqueString = QString("%1\t 年的 %2\n"
-                               "%3 %4\t 估价: %5\n")
-                           .arg((newAntique.year<0)?("公元前"+QString::number(-newAntique.year)):("公元  "+QString::number(newAntique.year)))
-                           .arg(newAntique.item.item_type)
-                           .arg(itemGenerator.status_list[newAntique.status])
-                           .arg(newAntique.is_fake?(newAntique.show_fake?"假货":"真货"):"真货")
-                           .arg(newAntique.estimated_price, 0, 'f', 2);
+                                    "%3 %4\t 估价: %5\n")
+                                .arg((newAntique.year<0)?("公元前"+QString::number(-newAntique.year)):("公元  "+QString::number(newAntique.year)))
+                                .arg(newAntique.item.item_type)
+                                .arg(itemGenerator.status_list[newAntique.status])
+                                .arg(newAntique.is_fake?(newAntique.show_fake?"假货":"真货"):"真货")
+                                .arg(newAntique.estimated_price, 0, 'f', 2);
 
-    // 4. 添加到文本浏览器
+    // 3. 添加到文本浏览器
     ui->text_antique->setText(AntiqueString);
 
-    // 5. 自动滚动到底部
-    ui->text_antique->verticalScrollBar()->setValue(
-        ui->text_antique->verticalScrollBar()->maximum()
+    // 4. 准备要显示的文本
+    QString IntroductionString = QString("%1\n")
+                                     .arg(newAntique.item.description);
+
+    // 5. 添加到文本浏览器
+    ui->text_introduction->setText(IntroductionString);
+}
+
+void Antique::updateDialogue()
+{
+    // 1. 准备要显示的文本
+    QString clientString = QString("%1\t %2\n"
+                                    "%3\n")
+                               .arg(newClient.name)
+                               .arg(newClient.is_seller?"卖家":"买家")
+                               .arg(clientGenerator.generateDialogue(newClient, 1, quote, luck));
+
+    // 2. 添加到文本浏览器
+    ui->text_customer->append(clientString);
+
+    // 3. 自动滚动到底部
+    ui->text_customer->verticalScrollBar()->setValue(
+        ui->text_customer->verticalScrollBar()->maximum()
         );
 }

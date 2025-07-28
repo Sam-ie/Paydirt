@@ -9,7 +9,15 @@
 class Item
 {
 public:
-    Item();
+    // 删除拷贝构造函数和赋值运算符
+    Item(const Item&) = delete;
+    Item& operator=(const Item&) = delete;
+
+    // 获取单例实例
+    static Item& instance() {
+        static std::unique_ptr<Item> instance(new Item());
+        return *instance;
+    }
 
     struct item_name
     {
@@ -38,10 +46,11 @@ private:
     double    status_rate[7]={0.3,0.6,0.8,1,1.3,1.9,3};
     item_name name_list[200];
 
-    int           next_id;
+    int           next_id=1;
     std::list<Antique_goods> antiqueList;  // 古董链表
-    int           max_list_size = 8;
+    int           max_list_size=8;
 
+    Item();
     // 辅助函数：保留指定有效数字
     static double roundToSignificantDigits(double value, int digits) {
         if (value == 0.0) return 0.0;
@@ -59,8 +68,8 @@ public:
     // 古董链表操作
     void           appendAntique(Antique_goods antique);         // 在链表末尾添加
     bool           removeAntiqueById(int id);                    // 删除指定id的节点
-    Antique_goods* findAntique(int id);                          // 查找并返回指针
-    Antique_goods* findAntique();                                // 随机返回指针
+    Antique_goods  findAntique(int id);                          // 查找并返回物品
+    Antique_goods  findAntique();                                // 随机返回物品
     double         inventoryRate();                              // 库存比例
 
 
