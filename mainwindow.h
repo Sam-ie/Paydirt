@@ -5,7 +5,6 @@
 #include <QWidget>
 #include "futures.h"
 #include "player.h"
-#include "entrance.h"
 #include "antique.h"
 #include "lottery.h"
 

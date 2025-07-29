@@ -18,6 +18,7 @@ Entrance::Entrance(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::Entrance)
 {
+    m_player=Player::instance();
     pushbutton_1_change=false;
 
     ui->setupUi(this);

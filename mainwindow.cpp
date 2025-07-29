@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "entrance.h"
 
 MainWindow *MainWindow::instance() {
     static MainWindow *instance = nullptr;

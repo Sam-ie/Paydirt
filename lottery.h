@@ -3,7 +3,6 @@
 
 #include <QWidget>
 #include "player.h"
-#include "mainwindow.h"
 
 namespace Ui {
 class Lottery;

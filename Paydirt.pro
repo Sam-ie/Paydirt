@@ -11,6 +11,7 @@ CONFIG += c++17
 
 SOURCES += \
     antique.cpp \
+    attribute.cpp \
     customer.cpp \
     futures.cpp \
     help.cpp \
@@ -24,6 +25,7 @@ SOURCES += \
 
 HEADERS += \
     antique.h \
+    attribute.h \
     customer.h \
     entrance.h \
     futures.h \

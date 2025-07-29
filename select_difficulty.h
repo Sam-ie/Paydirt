@@ -3,8 +3,6 @@
 
 #pragma once
 #include <QWidget>
-#include "entrance.h"
-#include "mainwindow.h"
 
 namespace Ui {
 class Select_Difficulty;

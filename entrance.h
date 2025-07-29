@@ -44,6 +44,7 @@ private slots:
 
 private:
     Ui::Entrance *ui;
+    Player* m_player;
 
     bool eventFilter(QObject *watched, QEvent *event);
 };

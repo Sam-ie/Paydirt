@@ -1,5 +1,6 @@
 #include "lottery.h"
 #include "ui_lottery.h"
+#include "mainwindow.h"
 
 Lottery *Lottery::instance() {
     static Lottery *instance = nullptr;

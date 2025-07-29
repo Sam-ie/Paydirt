@@ -1,4 +1,5 @@
 #include "player.h"
+#include "futures.h"
 
 Player *Player::instance() {
     static Player *instance = nullptr;
@@ -10,11 +11,14 @@ Player *Player::instance() {
 
 Player::Player()
 {
-    difficulty               =0;
-    cur_money                =-1;
-    future_money             =0;
-    round                    =0;
-    whole_market_fluctuation =0;
+    // 尝试从JSON加载数据
+    loadFromJson();
+}
+
+Player::~Player()
+{
+    // 析构时自动保存
+    saveToJson();
 }
 
 int Player::getDifficulty() const
@@ -73,4 +77,73 @@ void Player::setRound()
 double Player::getWhole_Market_Fluctuation() const
 {
     return whole_market_fluctuation;
+}
+
+void Player::saveToJson()
+{
+    QJsonObject json;
+    json["difficulty"] = difficulty;
+    json["cur_money"] = cur_money;
+    json["future_money"] = future_money;
+    json["round"] = round;
+    json["whole_market_fluctuation"] = whole_market_fluctuation;
+
+    QFile saveFile(getJsonFilePath());
+    if (!saveFile.open(QIODevice::WriteOnly)) {
+        return;
+    }
+
+    QJsonDocument saveDoc(json);
+    saveFile.write(saveDoc.toJson());
+    saveFile.close();
+}
+
+void Player::loadFromJson()
+{
+    QString filePath = getJsonFilePath();
+    QFileInfo fileInfo(filePath);
+    QDir dir(fileInfo.absolutePath());
+
+    // 1. 确保目录存在
+    if (!dir.exists()) {
+        dir.mkpath(".");
+    }
+
+    // 2. 检查文件是否存在，不存在则创建并写入默认值
+    if (!fileInfo.exists()) {
+        QFile file(filePath);
+        file.open(QIODevice::WriteOnly | QIODevice::Text);
+
+        // 初始化默认JSON数据
+        QJsonObject defaultJson;
+        defaultJson["difficulty"] = 0;
+        defaultJson["cur_money"] = -1;
+        defaultJson["future_money"] = 0;
+        defaultJson["round"] = 0;
+        defaultJson["whole_market_fluctuation"] = 0;
+
+        QJsonDocument doc(defaultJson);
+        file.write(doc.toJson());
+        file.close();
+    }
+
+    // 3. 正常读取现有文件
+    QFile loadFile(filePath);
+    QByteArray saveData = loadFile.readAll();
+    QJsonDocument loadDoc(QJsonDocument::fromJson(saveData));
+    QJsonObject json = loadDoc.object();
+
+    // 从JSON读取值，如果不存在则使用默认值
+    difficulty = json.contains("difficulty") ? json["difficulty"].toInt() : 0;
+    cur_money = json.contains("cur_money") ? json["cur_money"].toDouble() : -1;
+    future_money = json.contains("future_money") ? json["future_money"].toDouble() : 0;
+    round = json.contains("round") ? json["round"].toInt() : 0;
+    whole_market_fluctuation = json.contains("whole_market_fluctuation")
+                                   ? json["whole_market_fluctuation"].toDouble() : 0;
+
+    // 如果round为0，执行setRound()
+    if (round == 0) {
+        setRound();
+    }
+    return;
 }

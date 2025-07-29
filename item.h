@@ -5,6 +5,7 @@
 #include <QList>
 #include <QRandomGenerator>
 #include <list>
+#include "attribute.h"
 
 class Item
 {
@@ -49,6 +50,7 @@ private:
     int           next_id=1;
     std::list<Antique_goods> antiqueList;  // 古董链表
     int           max_list_size=8;
+    Attribute& attribute = Attribute::instance();
 
     Item();
     // 辅助函数：保留指定有效数字
@@ -57,8 +59,9 @@ private:
         double factor = std::pow(10.0, digits - std::ceil(std::log10(std::fabs(value))));
         return std::round(value * factor) / factor;
     }
-    // 计算真实价格的辅助函数
+    // 计算价格的辅助函数
     double calculateTruePrice(Antique_goods antique);
+    double calculateEstimatedPricePlayer(double basePrice, int rarity);
 
 public:
     QString   rarity_list[7]={"平凡","普通","稀有","罕见","史诗","传说","神话"};
@@ -74,12 +77,13 @@ public:
 
 
     // 生成古董物品的函数
-    Antique_goods generateAntique(int reputation);
+    Antique_goods generateAntique();
     // 修改古董物品的函数
     double modifyAntique(Antique_goods goods);
     // 修改链表最大size
-    void changeMaxListSize(int shop_level);
+    void changeMaxListSize();
 
+    double calculateEstimatedPriceExpert(double basePrice, int rarity, int expert_level);
 };
 
 #endif // ITEM_H

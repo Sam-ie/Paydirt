@@ -1,5 +1,6 @@
 #include "antique.h"
 #include "ui_antique.h"
+#include "mainwindow.h"
 
 Antique *Antique::instance() {
     static Antique *instance = nullptr;
@@ -15,6 +16,7 @@ Antique::Antique(QWidget *parent)
 {
     ui->setupUi(this);
 
+    ui->text_player_level->setText(attribute.getAttributeText());
 }
 
 Antique::~Antique()
@@ -117,14 +119,14 @@ void Antique::on_back_clicked()
 void Antique::initClient()
 {
     // 1. 生成新的客人
-    newClient = clientGenerator.generateClient(reputation, eloquence, luck);
+    newClient = clientGenerator.generateClient();
 
     // 2. 准备要显示的文本
     QString clientString = QString("%1\t %2\n"
                                    "%3\n")
                                .arg(newClient.name)
                                .arg(newClient.is_seller?"卖家":"买家")
-                               .arg(clientGenerator.generateDialogue(newClient, 1, quote, luck));
+                               .arg(clientGenerator.generateDialogue(newClient, 1, quote));
 
     // 3. 添加到文本浏览器
     ui->text_customer->setText(clientString);
@@ -167,7 +169,7 @@ void Antique::updateDialogue()
                                     "%3\n")
                                .arg(newClient.name)
                                .arg(newClient.is_seller?"卖家":"买家")
-                               .arg(clientGenerator.generateDialogue(newClient, 1, quote, luck));
+                               .arg(clientGenerator.generateDialogue(newClient, 1, quote));
 
     // 2. 添加到文本浏览器
     ui->text_customer->append(clientString);

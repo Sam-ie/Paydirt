@@ -5,7 +5,6 @@
 #include <QWidget>
 #include <QDateTime>
 #include "player.h"
-#include "mainwindow.h"
 
 namespace Ui {
 class Futures;

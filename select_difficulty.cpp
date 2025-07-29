@@ -1,5 +1,7 @@
 #include "select_difficulty.h"
 #include "ui_select_difficulty.h"
+#include "entrance.h"
+#include "mainwindow.h"
 
 Select_Difficulty *Select_Difficulty::instance(QWidget *parent) {
     static Select_Difficulty *instance = nullptr;

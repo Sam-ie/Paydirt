@@ -4,7 +4,11 @@
 #pragma once
 #include <QRandomGenerator>
 #include <QDateTime>
-#include "futures.h"
+#include <QJsonObject>
+#include <QFile>
+#include <QJsonDocument>
+#include <QStandardPaths>
+#include <QDir>
 
 class Player
 {
@@ -21,8 +25,23 @@ public:
     void setRound();
     double getWhole_Market_Fluctuation() const;
 
+    // 获取JSON文件路径（静态方法，全局可访问）
+    static QString getJsonFilePath() {
+        static const QString path = [](){
+            QString localLowPath = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/../LocalLow";
+            QString fullPath = localLowPath + "/Alfie Brook/Paydirt/data.json";
+            return QDir::toNativeSeparators(fullPath);
+        }();
+        return path;
+    }
+    // JSON 操作
+    void saveToJson();
+    void loadFromJson();
+
 private:
     Player();
+    ~Player();
+
 
 private:
     int    difficulty;

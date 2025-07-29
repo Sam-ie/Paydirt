@@ -7,7 +7,7 @@ Item::Item()
     name_list[0]={-4590,-4340,6,"瓦尔纳黄金女性护身符","保加利亚的瓦尔纳考古遗址和杜兰库拉克新石器时代遗址出土的新石器时期晚期，到铜石并用的史前时期的黄金加工首饰。这些金首饰被考古学家认为属于迄今发掘出的最早的经过加工的黄金饰品，被称为“瓦尔纳黄金宝藏”。",1};
     name_list[1]={-4590,-4340,6,"瓦尔纳金珠","大多数瓦尔纳金器所采用了早期金器最常用的锤碟工艺，但也有部分使用了模铸法，甚至失蜡法。这批黄金饰物的发现使我们有理由认为，黄金冶炼与铜冶炼几乎在同时期出现。这样高超的黄金制作工艺，在目前考古学的证据链里空白了2000年。",1};
     name_list[2]={-4590,-4340,6,"瓦尔纳金臂镯","瓦尔纳宝藏的原料来自河床出产的砂金。《阿耳戈英雄》的神话传说中据考证，在科尔喀斯，黄金是山洪冲下来的，人们借助排水沟和羊皮获得黄金，这就是金羊毛神话的由来。科尔喀斯位于黑海东端，在今天的吉鲁吉亚共和国境内。当地人用羊毛淘金的方法，一直到苏联时期还在继续。",1};
-    name_list[3]={-4590,-4340,5,"瓦尔纳陶鸟俑","用于某种宗教崇拜仪式。在铜石并用时代，原始社会逐渐解体，阶级、私有制和国家逐渐出现。瓦尔纳墓葬是人类社会出现等级制的重要证据，也是保加利亚从母系社会进入父系社会的证明。。",1};
+    name_list[3]={-4590,-4340,5,"瓦尔纳陶鸟俑","用于某种宗教崇拜仪式。在铜石并用时代，原始社会逐渐解体，阶级、私有制和国家逐渐出现。瓦尔纳墓葬是人类社会出现等级制的重要证据，也是保加利亚从母系社会进入父系社会的证明。",1};
     name_list[4]={-4500,-3000,6,"红山文化陶熏炉器盖","出土于牛河梁遗址第一地点女神庙。泥质红陶，陶质较细，火候甚高，质地坚硬，薄厚均匀；形如倒置的豆，柄呈喇叭状，盖的沿腹间起明显折棱；盖面有四组长条状镂孔，每组5条，间距相等，以中间孔最长。",1};
     name_list[5]={-4500,-3000,6,"红山文化玉斜口筒形器","出土于牛河梁遗址第二地点一号冢25号墓。器表为青绿色，整体呈扁圆筒状。一端作斜口，口大而外敞；一端作平口，开口较小。上下口沿的沿面均磨平，或磨薄似刀刃。接近下口沿的长径两侧，有由外向内单面钻出的双孔，内壁可见掏取内芯时遗留的线切割痕迹。",1};
     name_list[6]={-3500,-3100,6,"古埃及彩绘双耳陶罐","古埃及的前王朝时期，通常被划分为涅伽达文化三阶段：第一阶段又叫「阿姆拉特时期」，第二阶段又叫「格尔津时期」，第三阶段被视为「第零王朝」。「格尔津时期」的墓葬中，被发掘出了许多带有暗红图案的棕黄陶罐。双耳陶罐上绘有一艘带有两个舱的大船，有桅杆和密集的竖桨，船头有棕榈树装饰。",1};
@@ -141,11 +141,11 @@ double Item::inventoryRate()
     return antiqueList.size() / max_list_size;
 }
 
-Item::Antique_goods Item::generateAntique(int reputation)
+Item::Antique_goods Item::generateAntique()
 {
     // 1. 获取年份范围
-    int minYear = 2025 - reputation_to_year[reputation];
-    int maxYear = 2025 - reputation_to_year[reputation - 1];
+    int minYear = 2025 - reputation_to_year[attribute.reputation];
+    int maxYear = 2025 - reputation_to_year[attribute.reputation - 1];
 
     // 2. 找出符合条件的项目
     QList<int> validIndices;
@@ -204,6 +204,7 @@ Item::Antique_goods Item::generateAntique(int reputation)
 
     // 8. 计算真实价格
     temp.true_price = calculateTruePrice(temp);
+    temp.estimated_price = calculateEstimatedPricePlayer(temp.true_price, temp.item.rarity);
 
     // 9. 添加到链表
     appendAntique(temp);
@@ -233,7 +234,36 @@ double Item::modifyAntique(Antique_goods goods)
     return 0.0;
 }
 
-void Item::changeMaxListSize(int shop_level)
+void Item::changeMaxListSize()
 {
-    max_list_size = 8 + (int(shop_level/2))*2;
+    max_list_size = 8 + (int(attribute.shop_level/2))*2;
+}
+
+double Item::calculateEstimatedPricePlayer(double basePrice, int rarity)
+{
+    QRandomGenerator* rand = QRandomGenerator::global();
+
+    if (rand->bounded(10)>=5+attribute.ability-rarity)
+        return -1;
+
+    // 计算估值区间
+    double maxFactor = std::max((15.0 + rarity - attribute.ability)/10.0,1.0);
+    double minFactor = 1.0 / maxFactor;
+
+    // 生成随机估值
+    double random = rand->generateDouble();
+    double factor = minFactor + random * (maxFactor - minFactor);
+    double price = basePrice * factor;
+
+    return price;
+}
+
+double Item::calculateEstimatedPriceExpert(double basePrice, int rarity, int expert_level)
+{
+    QRandomGenerator* rand = QRandomGenerator::global();
+
+    if (rand->bounded(10)>=6+3*expert_level-rarity)
+        return -1;
+
+    return basePrice;
 }

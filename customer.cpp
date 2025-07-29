@@ -42,9 +42,19 @@ Customer::Customer() {
           << "冰治" << "茜勤" << "浩宇" << "芹恩" << "致银" << "丽丽" << "纳讯";
 
 
+    prologue_sell<<"";
+    prologue_buy<<"";
+    dialogue_sell<<"";
+    dialogue_buy<<"";
+    leave_sell<<"";
+    leave_buy<<"";
+    final_ask_sell<<"";
+    final_ask_buy<<"";
+    deal_sell<<"";
+    deal_buy<<"";
 }
 
-Customer::Client Customer::generateClient(int reputation, int eloquence, int luck)
+Customer::Client Customer::generateClient()
 {
     QRandomGenerator* rand = QRandomGenerator::global();
     Client client;
@@ -56,14 +66,14 @@ Customer::Client Customer::generateClient(int reputation, int eloquence, int luc
 
     client.ability = rand->bounded(101);    // 0-100
     client.greedy = rand->bounded(101);     // 0-100
-    client.is_patient = rand->bounded(10) < 10-reputation;
-    client.is_collector = rand->bounded(100) < 10+luck; // 10%概率
+    client.is_patient = rand->bounded(10) < 10-attribute.reputation;
+    client.is_collector = rand->bounded(100) < 10+attribute.luck; // 10%概率
     client.is_seller = rand->bounded(100) < 60 - itemManager.inventoryRate()*40;
 
     // 处理古董相关逻辑
     if (client.is_seller) {
         // 卖家逻辑
-        Item::Antique_goods newAntique = itemManager.generateAntique(reputation);
+        Item::Antique_goods newAntique = itemManager.generateAntique();
         itemManager.appendAntique(newAntique);
         client.pick_id = newAntique.id;
         client.estimated_price = calculateEstimatedPrice(newAntique.true_price,client.ability,client.is_seller,client.is_collector,1.0);
@@ -85,7 +95,7 @@ Customer::Client Customer::generateClient(int reputation, int eloquence, int luc
             client.highest_price = 0;
             client.lowest_price = 0;
         }
-        client.negotiation_available = 3+eloquence/2;
+        client.negotiation_available = 3+attribute.eloquence/2;
         if (!client.is_patient)
             client.negotiation_available/=2;
         client.deal=false;
@@ -94,7 +104,7 @@ Customer::Client Customer::generateClient(int reputation, int eloquence, int luc
     return client;
 }
 
-QString Customer::generateDialogue(Client client, bool flag, double quote, int luck)
+QString Customer::generateDialogue(Client client, bool flag, double quote) // 报价
 {
     QRandomGenerator* rand = QRandomGenerator::global();
     if (client.is_seller)
@@ -105,7 +115,7 @@ QString Customer::generateDialogue(Client client, bool flag, double quote, int l
             client.negotiation_available-=1;
         if (client.negotiation_available<=0)
         {
-            int will = (client.is_patient)?luck:luck/2;
+            int will = (client.is_patient)?attribute.luck:attribute.luck/2;
             return (rand->bounded(10)<will)?final_ask_sell[rand->bounded(final_ask_sell.size())]:leave_sell[rand->bounded(leave_sell.size())];
         }
         if (flag)
@@ -125,7 +135,7 @@ QString Customer::generateDialogue(Client client, bool flag, double quote, int l
             client.negotiation_available-=1;
         if (client.negotiation_available<=0)
         {
-            int will = (client.is_patient)?luck:luck/2;
+            int will = (client.is_patient)?attribute.luck:attribute.luck/2;
             return (rand->bounded(10)<will)?final_ask_buy[rand->bounded(final_ask_buy.size())]:leave_buy[rand->bounded(leave_buy.size())];
         }
         if (flag)
@@ -144,13 +154,12 @@ double Customer::calculateEstimatedPrice(double basePrice, int ability, bool isS
     QRandomGenerator* rand = QRandomGenerator::global();
 
     // 能力系数计算
-    double abilitySquared = ability * ability;
     double abilityLog = (ability == 0) ? 0 :
-                            ability * std::log10(ability/1000.0*999 + 1);
+                            ability * std::log10(ability/100.0*99 + 1);
 
     // 计算估值区间
-    double minFactor = 1.0 / (2.0 - abilitySquared/10000.0);
-    double maxFactor = 2.0 - abilityLog/10000.0;
+    double maxFactor = 2.0 - abilityLog/200.0;
+    double minFactor = 1.0 / maxFactor;
 
     // 确保区间有效
     minFactor = qBound(0.1, minFactor, 10.0);

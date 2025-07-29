@@ -1,5 +1,6 @@
 #include "futures.h"
 #include "ui_futures.h"
+#include "mainwindow.h"
 
 Futures *Futures::instance() {
     static Futures *instance = nullptr;

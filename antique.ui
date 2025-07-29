@@ -63,7 +63,14 @@
            </property>
            <layout class="QGridLayout" name="gridLayout_11">
             <item row="0" column="0">
-             <widget class="QTextBrowser" name="text_player_level"/>
+             <widget class="QTextBrowser" name="text_player_level">
+              <property name="font">
+               <font>
+                <family>华文楷体</family>
+                <pointsize>18</pointsize>
+               </font>
+              </property>
+             </widget>
             </item>
            </layout>
           </widget>

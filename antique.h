@@ -3,9 +3,9 @@
 
 #include <QWidget>
 #include <QScrollBar>
-#include "mainwindow.h"
 #include "item.h"
 #include "customer.h"
+#include "attribute.h"
 
 namespace Ui {
 class Antique;
@@ -44,17 +44,10 @@ private:
 
 
 private:
-    // 玩家
-    int    eloquence;
-    int    ability;
-    int    insight;
-    int    luck;
-    int    shop_level;
-    int    reputation=7;
-
     // 报价
     double quote;
 
+    Attribute& attribute = Attribute::instance();
     Customer& clientGenerator = Customer::instance();
     Item& itemGenerator = Item::instance();
     Customer::Client newClient;

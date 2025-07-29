@@ -4,6 +4,7 @@
 #include <QString>
 #include <QRandomGenerator>
 #include "item.h"
+#include "attribute.h"
 
 
 class Customer
@@ -38,9 +39,9 @@ public:
     };
 
     // 生成顾客的函数
-    Client generateClient(int reputation, int eloquence, int luck);
+    Client generateClient();
 
-    QString generateDialogue(Customer::Client, bool flag, double quote, int luck);// 0为初始化，1为继续
+    QString generateDialogue(Customer::Client, bool flag, double quote);// 0为初始化，1为继续
 
 
 private:
@@ -58,6 +59,7 @@ private:
     QList<QString> deal_buy;
 
     Item& itemManager = Item::instance();
+    Attribute& attribute = Attribute::instance();
 
     Customer();
     double calculateEstimatedPrice(double basePrice, int ability, bool isSeller, bool isCollector, double eventFactor);
