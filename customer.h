@@ -16,8 +16,8 @@ public:
 
     // 获取单例实例
     static Customer& instance() {
-        static std::unique_ptr<Customer> instance(new Customer());
-        return *instance;
+        static Customer instance;
+        return instance;
     }
 
     struct Client

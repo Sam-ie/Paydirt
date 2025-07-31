@@ -3,11 +3,8 @@
 #include "entrance.h"
 
 MainWindow *MainWindow::instance() {
-    static MainWindow *instance = nullptr;
-    if (!instance) {
-        instance = new MainWindow();
-    }
-    return instance;
+    static MainWindow instance;
+    return &instance;
 }
 
 MainWindow::MainWindow(QWidget *parent)

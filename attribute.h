@@ -3,6 +3,9 @@
 
 #include <QString>
 #include <QRandomGenerator>
+#include <QSaveFile>
+#include <QJsonObject>
+#include "player.h"
 
 class Attribute
 {
@@ -13,8 +16,8 @@ public:
 
     // 获取单例实例
     static Attribute& instance() {
-        static std::unique_ptr<Attribute> instance(new Attribute());
-        return *instance;
+        static Attribute instance;
+        return instance;
     }
 
     // 玩家
@@ -26,9 +29,13 @@ public:
     int    reputation; // 注意reputation对应reputation_list时要-1
 
     QString getAttributeText();
+    // JSON 操作
+    void saveToJson();
+    void loadFromJson();
 
 private:
     Attribute();
+    ~Attribute();
 
     QString   reputation_list[7]={"默默无闻","口碑尚可","小有名气","有口皆碑","名噪一时","誉满天下","名垂青史"};
     QString   shop_level_list[20]={"破旧地摊","三轮小铺","便宜坊","旧物拾荒","旧梦回收站",

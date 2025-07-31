@@ -3,11 +3,8 @@
 #include "mainwindow.h"
 
 Antique *Antique::instance() {
-    static Antique *instance = nullptr;
-    if (!instance) {
-        instance = new Antique();
-    }
-    return instance;
+    static Antique instance;
+    return &instance;
 }
 
 Antique::Antique(QWidget *parent)

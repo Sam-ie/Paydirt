@@ -3,11 +3,8 @@
 #include "mainwindow.h"
 
 Lottery *Lottery::instance() {
-    static Lottery *instance = nullptr;
-    if (!instance) {
-        instance = new Lottery();
-    }
-    return instance;
+    static Lottery instance;
+    return &instance;
 }
 
 Lottery::Lottery(QWidget *parent)

@@ -3,8 +3,9 @@
 
 #pragma once
 #include <QWidget>
-#include "futures.h"
 #include "player.h"
+#include "attribute.h"
+#include "futures.h"
 #include "antique.h"
 #include "lottery.h"
 

@@ -3,11 +3,8 @@
 #include "mainwindow.h"
 
 Futures *Futures::instance() {
-    static Futures *instance = nullptr;
-    if (!instance) {
-        instance = new Futures();
-    }
-    return instance;
+    static Futures instance;
+    return &instance;
 }
 
 Futures::Futures(QWidget *parent)

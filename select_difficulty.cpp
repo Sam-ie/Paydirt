@@ -4,11 +4,8 @@
 #include "mainwindow.h"
 
 Select_Difficulty *Select_Difficulty::instance(QWidget *parent) {
-    static Select_Difficulty *instance = nullptr;
-    if (!instance) {
-        instance = new Select_Difficulty(parent);
-    }
-    return instance;
+    static Select_Difficulty instance;
+    return &instance;
 }
 
 Select_Difficulty::Select_Difficulty(QWidget *parent)

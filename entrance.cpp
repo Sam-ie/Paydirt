@@ -2,11 +2,8 @@
 #include "ui_entrance.h"
 
 Entrance *Entrance::instance() {
-    static Entrance *instance = nullptr;
-    if (!instance) {
-        instance = new Entrance();
-    }
-    return instance;
+    static Entrance instance;
+    return &instance;
 }
 
 void Entrance::set_close()
@@ -19,6 +16,7 @@ Entrance::Entrance(QWidget *parent)
     , ui(new Ui::Entrance)
 {
     m_player=Player::instance();
+    m_player->setRound();
     pushbutton_1_change=false;
 
     ui->setupUi(this);

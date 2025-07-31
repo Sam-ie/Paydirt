@@ -16,8 +16,8 @@ public:
 
     // 获取单例实例
     static Item& instance() {
-        static std::unique_ptr<Item> instance(new Item());
-        return *instance;
+        static Item instance;
+        return instance;
     }
 
     struct item_name

@@ -2,11 +2,8 @@
 #include "ui_help.h"
 
 Help *Help::instance(QWidget *parent) {
-    static Help *instance = nullptr;
-    if (!instance) {
-        instance = new Help(parent);
-    }
-    return instance;
+    static Help instance;
+    return &instance;
 }
 
 Help::Help(QWidget *parent)

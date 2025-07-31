@@ -5,7 +5,7 @@
 #include <QRandomGenerator>
 #include <QDateTime>
 #include <QJsonObject>
-#include <QFile>
+#include <QSaveFile>
 #include <QJsonDocument>
 #include <QStandardPaths>
 #include <QDir>
@@ -28,7 +28,7 @@ public:
     // 获取JSON文件路径（静态方法，全局可访问）
     static QString getJsonFilePath() {
         static const QString path = [](){
-            QString localLowPath = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/../LocalLow";
+            QString localLowPath = QDir::cleanPath(QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/../LocalLow");
             QString fullPath = localLowPath + "/Alfie Brook/Paydirt/data.json";
             return QDir::toNativeSeparators(fullPath);
         }();
